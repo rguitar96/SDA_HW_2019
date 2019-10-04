@@ -1,0 +1,116 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+```
+
+> We load the data and give a quick look at the header
+
+```{r}
+data <- get(load("movies.RData"))
+```
+```{r}
+head(data)
+```
+
+> Looking for NAN values
+
+```{r}
+data[!complete.cases(data['runtime']),]
+```
+
+> We can find the runtime of the movie "The End of America" in Google, which is 74 minutes.
+
+```{r}
+data$runtime[data$title == "The End of America"] <- 74
+```
+
+```{r}
+data[!complete.cases(data['director']),]
+```
+
+> We can find the missing directors as well.
+
+```{r}
+data$director[data$title == "Lorenzo's Oil"] <- "George Miller"
+data$director[data$title == "The Ninth Gate"] <- "Roman Polanski"
+```
+
+
+```{r}
+data[!complete.cases(data["studio"]),]
+```
+
+> It seems that there are 8 films without a studio associated
+
+```{r}
+data[!complete.cases(data["dvd_rel_year"]),]
+```
+
+> And 8 films withouth a DVD
+
+```{r}
+data[!complete.cases(data["actor5"]),]
+```
+
+> And 15 films without one or more of the five main actors.
+
+> Now, some very basic visualization!
+
+```{r}
+hist(data$audience_score)
+ggplot(data, aes(x=audience_score)) + geom_histogram()
+ggplot(data, aes(x=critics_score)) + geom_histogram()
+ggplot(data, aes(x=imdb_rating)) + geom_histogram()
+ggplot(data, aes(x=thtr_rel_year)) + geom_histogram()
+ggplot(data, aes(x=imdb_num_votes)) + geom_histogram()
+ggplot(data, aes(x=log10(imdb_num_votes))) + geom_histogram()
+```
+```{r}
+ggplot(aes(x=forcats::fct_infreq(title_type)), data=data) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(genre)), data=data) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(mpaa_rating)), data=data) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(critics_rating)), data=data) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(audience_rating)), data=data) + geom_bar()
+```
+
+> Some continuous plotting:
+
+```{r}
+ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=data, aes(x=audience_score, y=imdb_rating)) + geom_point() + geom_smooth(method='lm')
+```
+
+
+```{r}
+ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=genre), size=3) + geom_smooth(method='lm')
+```
+
+```{r}
+ggplot(data=subset(data, genre == "Action & Adventure"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Animation"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Art House & International"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Comedy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Documentary"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Drama"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Horror"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Musical & Performing Arts"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Mystery & Suspense"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Other"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+
+ggplot(data=subset(data, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+```
+
