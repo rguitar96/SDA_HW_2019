@@ -1,5 +1,6 @@
 #Load the data
 movies <- get(load("movies.RData"))
+##################################################################################################################################################
 
 #Checking for missing data and its number
 sum(is.na(movies))
@@ -60,5 +61,16 @@ movies$actor5[movies$title == "Attack of the 50 Foot Woman"] <- "George Douglas"
 #https://www.imdb.com/title/tt0051380/fullcredits/?ref_=tt_ov_st_sm
 movies$actor5[movies$title == "The Illusionist (L'illusionniste)"] <- "Eleanor Tomlinson"
 #https://en.wikipedia.org/wiki/The_Illusionist_(2006_film)
+
+summary(movies)
+#Since the missing values do not belong to any a priori critical attribute, we will not delete any instances.
+##################################################################################################################################################
+
+#We delete the columns we are not interested in for the analysis.
+movies <- subset(movies, select = -c(imdb_url,rt_url))
+##################################################################################################################################################
+
+#1. What can we say about the relationship between audience scores and at least four of
+#the other variables in this dataset?
 
 
