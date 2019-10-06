@@ -72,5 +72,28 @@ movies <- subset(movies, select = -c(imdb_url,rt_url))
 
 #1. What can we say about the relationship between audience scores and at least four of
 #the other variables in this dataset?
+#Audience score vs Critics score
+library(ggplot2)
+ggplot(movies, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method=lm)
+
+#Audience score vs Genre and Audience Score vs Critics Score vs Genre
+ggplot(movies, aes(x=reorder(genre, audience_score, FUN = median), y=audience_score, fill=genre)) +geom_boxplot()
+movies$score_diff <- movies$audience_score - movies$critics_score
+ggplot(movies, aes(x=reorder(genre, score_diff, FUN = median), y=score_diff, fill=genre)) +geom_boxplot()
+
+#Audience score vs Thtre_rel_month
+ggplot(movies, aes(x=thtr_rel_month)) +   geom_histogram(color="black", fill="blue")
+ggplot(movies, aes(x=thtr_rel_month, y=mean(audience_score))) + geom_point() + geom_smooth(method=lm)
+
+#Audience score vs Best_pic_win
+ggplot(movies, aes(x=best_pic_win, y=audience_score, fill=best_pic_win)) +geom_boxplot()
+
+#Audience score vs Best_dir_win
+ggplot(movies, aes(x=best_dir_win, y=audience_score, fill=best_dir_win)) +geom_boxplot()
+
+#Audience score vs Best_actor_win/Best_actress_win
+ggplot(movies, aes(x=best_actor_win, y=audience_score, fill=best_actor_win)) +geom_boxplot()
+ggplot(movies, aes(x=best_actress_win, y=audience_score, fill=best_actress_win)) +geom_boxplot()
+##################################################################################################################################################
 
 
