@@ -96,4 +96,18 @@ ggplot(movies, aes(x=best_actor_win, y=audience_score, fill=best_actor_win)) +ge
 ggplot(movies, aes(x=best_actress_win, y=audience_score, fill=best_actress_win)) +geom_boxplot()
 ##################################################################################################################################################
 
+#2. Is there a difference in the score given by audience members (or critics) for movies
+#of different genres? And for movies with different MPAA ratings? If so, which categories
+#seem to be significantly different for each other?
+ggplot(movies, aes(x=reorder(genre, audience_score, FUN = median), y=audience_score, fill=genre)) +geom_boxplot()
+ggplot(movies, aes(x=reorder(genre, critics_score, FUN = median), y=critics_score, fill=genre)) +geom_boxplot()
+
+ggplot(movies, aes(x=reorder(mpaa_rating, audience_score, FUN = median), y=audience_score, fill=mpaa_rating)) +geom_boxplot()
+ggplot(movies, aes(x=reorder(mpaa_rating, critics_score, FUN = median), y=critics_score, fill=mpaa_rating)) +geom_boxplot()
+##################################################################################################################################################
+
+
+#Other questions:
+#Is the month relevant to the score?
+#Is there a relationship between the score and the awards a movie receives?
 
