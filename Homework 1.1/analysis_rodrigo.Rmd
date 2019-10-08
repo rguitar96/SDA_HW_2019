@@ -114,3 +114,23 @@ ggplot(data=subset(data, genre == "Other"), aes(x=audience_score, y=critics_scor
 ggplot(data=subset(data, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 ```
 
+
+```{r}
+nrow(data[data$best_pic_win == "yes" | data$best_actor_win == "yes" | data$best_actress_win == "yes" | data$best_dir_win == "yes",])
+nrow(data)
+```
+
+> Are oscar-awarded films more liked?
+
+```{r}
+ggplot(data=data[data$best_pic_win == "yes" | data$best_actor_win == "yes" | data$best_actress_win == "yes" | data$best_dir_win == "yes",],
+       aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
+```
+
+> It seems that not really
+
+> do older films tend to have higher score?
+
+
+
