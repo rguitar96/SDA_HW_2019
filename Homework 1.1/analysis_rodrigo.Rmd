@@ -10,127 +10,202 @@ library(ggplot2)
 > We load the data and give a quick look at the header
 
 ```{r}
-data <- get(load("movies.RData"))
+movies <- get(load("movies.RData"))
 ```
 ```{r}
-head(data)
+head(movies)
 ```
 
 > Looking for NAN values
 
 ```{r}
-data[!complete.cases(data['runtime']),]
+movies[!complete.cases(movies['runtime']),]
 ```
 
 > We can find the runtime of the movie "The End of America" in Google, which is 74 minutes.
 
 ```{r}
-data$runtime[data$title == "The End of America"] <- 74
+movies$runtime[movies$title == "The End of America"] <- 74
 ```
 
 ```{r}
-data[!complete.cases(data['director']),]
+movies[!complete.cases(movies['director']),]
 ```
 
 > We can find the missing directors as well.
 
 ```{r}
-data$director[data$title == "Lorenzo's Oil"] <- "George Miller"
-data$director[data$title == "The Ninth Gate"] <- "Roman Polanski"
+movies$director[movies$title == "Lorenzo's Oil"] <- "George Miller"
+movies$director[movies$title == "The Ninth Gate"] <- "Roman Polanski"
 ```
 
 
 ```{r}
-data[!complete.cases(data["studio"]),]
+movies[!complete.cases(movies["studio"]),]
 ```
 
 > It seems that there are 8 films without a studio associated
 
 ```{r}
-data[!complete.cases(data["dvd_rel_year"]),]
+movies[!complete.cases(movies["dvd_rel_year"]),]
 ```
 
 > And 8 films withouth a DVD
 
 ```{r}
-data[!complete.cases(data["actor5"]),]
+movies[!complete.cases(movies["actor5"]),]
 ```
 
 > And 15 films without one or more of the five main actors.
 
+> Lets remove columns and add them up!
+
+```{r}
+movies$thtr_rel_date <- as.Date(paste0(movies$thtr_rel_year, "-", movies$thtr_rel_month, "-", movies$thtr_rel_day))
+movies$dvd_rel_date <- as.Date(paste0(movies$dvd_rel_year, "-", movies$dvd_rel_month, "-", movies$dvd_rel_day))
+
+movies$dvd_rel_day <- NULL
+movies$dvd_rel_month <- NULL
+movies$dvd_rel_year <- NULL
+
+movies$thtr_rel_day <- NULL
+movies$thtr_rel_month <- NULL
+movies$thtr_rel_year <- NULL
+
+movies$imdb_url <- NULL
+movies$rt_url <- NULL
+```
+
+> Cleaner!
+
+```{r}
+head(movies)
+```
+
+
 > Now, some very basic visualization!
 
 ```{r}
-hist(data$audience_score)
-ggplot(data, aes(x=audience_score)) + geom_histogram()
-ggplot(data, aes(x=critics_score)) + geom_histogram()
-ggplot(data, aes(x=imdb_rating)) + geom_histogram()
-ggplot(data, aes(x=thtr_rel_year)) + geom_histogram()
-ggplot(data, aes(x=imdb_num_votes)) + geom_histogram()
-ggplot(data, aes(x=log10(imdb_num_votes))) + geom_histogram()
+hist(movies$audience_score)
+ggplot(movies, aes(x=audience_score)) + geom_histogram()
+ggplot(movies, aes(x=critics_score)) + geom_histogram()
+ggplot(movies, aes(x=imdb_rating)) + geom_histogram()
+ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
+ggplot(movies, aes(x=imdb_num_votes)) + geom_histogram()
+ggplot(movies, aes(x=log10(imdb_num_votes))) + geom_histogram()
 ```
 ```{r}
-ggplot(aes(x=forcats::fct_infreq(title_type)), data=data) + geom_bar()
-ggplot(aes(x=forcats::fct_infreq(genre)), data=data) + geom_bar()
-ggplot(aes(x=forcats::fct_infreq(mpaa_rating)), data=data) + geom_bar()
-ggplot(aes(x=forcats::fct_infreq(critics_rating)), data=data) + geom_bar()
-ggplot(aes(x=forcats::fct_infreq(audience_rating)), data=data) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(title_type)), data=movies) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(genre)), data=movies) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(mpaa_rating)), data=movies) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(critics_rating)), data=movies) + geom_bar()
+ggplot(aes(x=forcats::fct_infreq(audience_rating)), data=movies) + geom_bar()
 ```
 
 > Some continuous plotting:
 
 ```{r}
-ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
-ggplot(data=data, aes(x=audience_score, y=imdb_rating)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=audience_score, y=imdb_rating)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=critics_score, y=imdb_rating)) + geom_point() + geom_smooth(method='lm')
 ```
 
 
 ```{r}
-ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
-ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=genre), size=3) + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=audience_score, y=critics_score)) + geom_point(aes(col=genre), size=3) + geom_smooth(method='lm')
 ```
 
 ```{r}
-ggplot(data=subset(data, genre == "Action & Adventure"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Action & Adventure"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Animation"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Animation"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Art House & International"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Art House & International"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Comedy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Comedy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Documentary"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Documentary"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Drama"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Drama"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Horror"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Horror"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Musical & Performing Arts"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Musical & Performing Arts"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Mystery & Suspense"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Mystery & Suspense"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Other"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Other"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 
-ggplot(data=subset(data, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
 ```
 
 
 ```{r}
-nrow(data[data$best_pic_win == "yes" | data$best_actor_win == "yes" | data$best_actress_win == "yes" | data$best_dir_win == "yes",])
-nrow(data)
+nrow(movies[movies$best_pic_win == "yes" | movies$best_actor_win == "yes" | movies$best_actress_win == "yes" | movies$best_dir_win == "yes",])
+nrow(movies)
 ```
 
 > Are oscar-awarded films more liked?
 
 ```{r}
-ggplot(data=data[data$best_pic_win == "yes" | data$best_actor_win == "yes" | data$best_actress_win == "yes" | data$best_dir_win == "yes",],
+ggplot(data=movies[movies$best_pic_win == "yes" | movies$best_actor_win == "yes" | movies$best_actress_win == "yes" | movies$best_dir_win == "yes",],
        aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
-ggplot(data=data, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
+ggplot(data=movies, aes(x=audience_score, y=critics_score)) + geom_point() + geom_smooth(method='lm')
 ```
 
 > It seems that not really
 
-> do older films tend to have higher score?
+
+> 1-Is there a relationship between the type/genre and score?
+
+```{r}
+ggplot(data=movies, aes(x=audience_score)) + geom_histogram(bins=30, aes(color = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
+ggplot(data=movies, aes(x=audience_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
+```
+
+> It seems that Documentaries are very highly rated by the audience. Feature Films are more evenly distributed, and so are TV Movies (though there are not many samples)
+
+```{r}
+ggplot(data=movies, aes(x=critics_score)) + geom_histogram(bins=30, aes(color = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
+ggplot(data=movies, aes(x=critics_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
+```
 
 
+> This phenomenom is even more accentuated when we take into account the rating of critics.
+
+```{r}
+ggplot(data=movies, aes(x=imdb_rating)) + geom_histogram(bins=30, aes(color = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
+ggplot(data=movies, aes(x=imdb_rating)) + geom_density(aes(color = title_type), kernel = "gaussian")
+```
+
+> When we take into account the imdb ratings, Feature Films get, in general, higher scores, and it seems like a more simmetrical normal distribution.
+
+```{r}
+ggplot(data=movies, aes(x = forcats::fct_infreq(genre), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+ggplot(data=movies, aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+```{r}
+ggplot(data=movies, aes(x = forcats::fct_infreq(genre), y = critics_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+ggplot(data=movies, aes(x = reorder(genre, critics_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+```{r}
+ggplot(data=movies, aes(x = forcats::fct_infreq(genre), y = imdb_rating, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+ggplot(data=movies, aes(x = reorder(genre, imdb_rating, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+> Apart from Documentaries, and Music films, would you say there are genres more liked than others?
+
+
+
+
+
+> 3-Comparison best picture/oscar wins and score/oscar wins. Are oscar-awarded films more liked?
+
+> 4-What are the trends over the years?
+>	-Preferred month for releases? number of films by month (over the years? does it affect the score?)
+>	-Does the genre change over the years?
+>	-Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
 
