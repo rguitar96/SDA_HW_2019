@@ -117,27 +117,27 @@ ggplot(data=movies, aes(x=audience_score, y=critics_score)) + geom_point(aes(col
 ```
 
 ```{r}
-ggplot(data=subset(movies, genre == "Action & Adventure"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Action & Adventure"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Animation"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Animation"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Art House & International"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Art House & International"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Comedy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Comedy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Documentary"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Documentary"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Drama"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Drama"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Horror"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Horror"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Musical & Performing Arts"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Musical & Performing Arts"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Mystery & Suspense"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Mystery & Suspense"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Other"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Other"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 
-ggplot(data=subset(movies, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3) + geom_smooth(method='lm')
+ggplot(data=subset(movies, genre == "Science Fiction & Fantasy"), aes(x=audience_score, y=critics_score)) + geom_point(aes(col=title_type), size=3)
 ```
 
 
@@ -200,12 +200,74 @@ ggplot(data=movies, aes(x = reorder(genre, imdb_rating, median, order=TRUE), y =
 
 
 
-
-
 > 3-Comparison best picture/oscar wins and score/oscar wins. Are oscar-awarded films more liked?
+
+
+```{r}
+ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+> It seems that best actress and best director awarded films tend to have sighly higher scores overall. While best actor does not seem to be related to the score, there is a huge positive relationship between best picture awared films and the overall score.
+
+```{r}
+ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_pic_nom, y = critics_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = best_pic_nom, y = imdb_rating, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+> As movies that have won the best picture oscar are only 7, we should use the pictures that have been nominated (even if they are still only 22)
+
+```{r}
+ggplot(aes(x=best_pic_nom), data=movies[movies$best_pic_win=="yes",]) + geom_bar()
+```
+
+> There seems to be a film that has been tagged as Oscar awarded but not nominated, let's check it and correct it.
+
+```{r}
+movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]
+```
+
+```{r}
+movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]$best_pic_nom <- "yes"
+```
+
+```{r}
+ggplot(aes(x=best_actor_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar()
+ggplot(aes(x=best_actress_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar()
+ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar()
+```
+
 
 > 4-What are the trends over the years?
 >	-Preferred month for releases? number of films by month (over the years? does it affect the score?)
 >	-Does the genre change over the years?
 >	-Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
+
+
+```{r}
+ggplot(data=movies, aes(x=thtr_rel_date, y=audience_score)) + geom_point(aes(col=best_pic_nom), size=3)
+
+commonTheme = list(labs(color="Density",fill="Density", x="Date", y="Overall score"))
+ggplot(data=movies,aes(thtr_rel_date, audience_score)) + 
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + 
+  scale_fill_continuous(low="green",high="red") +
+  guides(alpha="none") +
+  geom_point() + commonTheme
+```
+
+
+```{r}
+ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
+ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
+```
 
