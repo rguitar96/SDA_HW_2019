@@ -1,0 +1,118 @@
+---
+title: "Statistical Data Analysis - Homework 1.1"
+author: "Group 5"
+date: "11/10/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+> We load the libraries
+
+```{r}
+library(ggplot2)
+library(lubridate)
+```
+
+> We load the data and give a quick look at the header
+
+```{r}
+movies <- get(load("movies.RData"))
+data <- head(movies)
+```
+
+```{r results = 'asis', echo= FALSE}
+range <- 1:8
+range <- list(range,range+8,range+16,range+24)
+knitr::kable(data[range[[1]]], caption = paste("From column",range[[1]][1],"to column",range[[1]][8]));
+knitr::kable(data[range[[2]]], caption = paste("From column",range[[2]][1],"to column",range[[2]][8]));
+knitr::kable(data[range[[3]]], caption = paste("From column",range[[3]][1],"to column",range[[3]][8]));
+knitr::kable(data[range[[4]]], caption = paste("From column",range[[4]][1],"to column",range[[4]][8]));
+
+```
+
+> Insert the data cleaning code (filling Null values, etc...)
+
+> We create two new variables to study the data.
+
+```{r}
+movies$thtr_rel_date <- as.Date(paste0(movies$thtr_rel_year, "-", movies$thtr_rel_month, "-", movies$thtr_rel_day))
+movies$thtr_rel_decade <- as.numeric(format(movies$thtr_rel_date,"%Y")) - (as.numeric(format(movies$thtr_rel_date,"%Y")) %% 10)
+movies$thtr_rel_decade <- as.factor(movies$thtr_rel_decade)
+```
+
+```{r, echo=FALSE}
+paste("Insert some MORE code here please.")
+```
+
+# SDA Homework 1.1
+
+We chose the "Films" dataset and we are going to answer the following questions that we thought were interesting.
+
+  
+### 1. Is there a relationship between the type/genre and score?
+### 2. Comparing different scores (critics/audience/imdb)
+	* is there any difference on the audience/critics score by genre?
+	
+### 3. Comparison best picture/oscar wins and score/oscar wins
+	* are oscar-awarded films more liked?
+	
+### 4. What are the trends over the years?
+	* Preferred month for releases? number of films by month (over the years? does it affect the score?)
+	* Does the genre change over the years?
+	* Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
+	
+### 5. Do actors and directors have a higher score once they won? (find the first film and see the tendency, look for sudden change)
+
+------
+
+> Let's answer some questions then 
+
+## 4. What are the trends over the years?
+### - Preferred month for releases? number of films by month (over the years? does it affect the score?)
+
+> We start to count the movies per months to see if there is a pattern in all this time in the release months.
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = thtr_rel_month), width = 0.5) + theme_minimal() + xlab("Month") + ylab("# of Films") + ggtitle("Number of Films released per month each decade ") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+```
+
+> We can see that overall there is a "pattern" of releases in the months of January, June, October and December, so let's take a better look at this data by decade.
+> We breakdown the previous graphs grouping the data by decade.
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = thtr_rel_month), width = 0.5) + facet_wrap(thtr_rel_decade ~ .) + theme_minimal() + xlab("Month") + ylab("# of Films") + ggtitle("Number of Films released per month each decade w/ breakdown") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+```
+> Now we can see clearly that since the 70's there has been a trend of two moments in the years to release movies in theaters: in summer (June) and in the winter Holidays (December and January). However, in this last decade, we only see a spike in December.
+
+### - Does the genre change over the years (by decade)?
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = genre)) + facet_wrap(thtr_rel_decade ~ .) + theme_minimal() + xlab("Genre") + ylab("# of Films") + ggtitle("Genre of Films released each decade w/ breakdown") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + coord_flip()
+```
+
+> We can see an increment over the years in the Documentary Genre, as well as in Mystery and Suspense. 
+
+### - Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered	
+	
+> Let's see what is the amount of votes over the years that we have for all the films.
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes)) + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ylim(min(movies$imdb_num_votes),quantile(movies$imdb_num_votes,.90)) + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+```
+
+> Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+```
+
+> We can clearly see a decrease in overall score of this movies, but we can only asume that the newer the film, the more votes it gets and the worse it performs, but it could be because the quality in filmaking has woesened.
+
+### 5. Do actors and directors have a higher score once they won? (find the first film and see the tendency, look for sudden change)
+
+```{r}
+cat("Testing...")
+#ggplot(movies) + geom_col(aes(x = imdb_rating, y = director, fill = director[best_dir_win=="yes"]))
+#ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+```

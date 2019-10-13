@@ -1,0 +1,241 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Statistical Data Analysis - Homework 1.1},
+            pdfauthor={Group 5},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Statistical Data Analysis - Homework 1.1}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Group 5}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{11/10/2019}
+
+
+\begin{document}
+\maketitle
+
+\begin{quote}
+We load the libraries
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+We load the data and give a quick look at the header
+\end{quote}
+
+\begin{verbatim}
+##                  title   title_type       genre runtime mpaa_rating
+## 1          Filly Brown Feature Film       Drama      80           R
+## 2             The Dish Feature Film       Drama     101       PG-13
+## 3  Waiting for Guffman Feature Film      Comedy      84           R
+## 4 The Age of Innocence Feature Film       Drama     139          PG
+## 5          Malevolence Feature Film      Horror      90           R
+## 6          Old Partner  Documentary Documentary      78     Unrated
+##                     studio thtr_rel_year thtr_rel_month thtr_rel_day
+## 1      Indomina Media Inc.          2013              4           19
+## 2    Warner Bros. Pictures          2001              3           14
+## 3   Sony Pictures Classics          1996              8           21
+## 4        Columbia Pictures          1993             10            1
+## 5 Anchor Bay Entertainment          2004              9           10
+## 6       Shcalo Media Group          2009              1           15
+##   dvd_rel_year dvd_rel_month dvd_rel_day imdb_rating imdb_num_votes
+## 1         2013             7          30         5.5            899
+## 2         2001             8          28         7.3          12285
+## 3         2001             8          21         7.6          22381
+## 4         2001            11           6         7.2          35096
+## 5         2005             4          19         5.1           2386
+## 6         2010             4          20         7.8            333
+##    critics_rating critics_score audience_rating audience_score
+## 1          Rotten            45         Upright             73
+## 2 Certified Fresh            96         Upright             81
+## 3 Certified Fresh            91         Upright             91
+## 4 Certified Fresh            80         Upright             76
+## 5          Rotten            33         Spilled             27
+## 6           Fresh            91         Upright             86
+##   best_pic_nom best_pic_win best_actor_win best_actress_win best_dir_win
+## 1           no           no             no               no           no
+## 2           no           no             no               no           no
+## 3           no           no             no               no           no
+## 4           no           no            yes               no          yes
+## 5           no           no             no               no           no
+## 6           no           no             no               no           no
+##   top200_box          director            actor1             actor2
+## 1         no  Michael D. Olmos    Gina Rodriguez       Jenni Rivera
+## 2         no         Rob Sitch         Sam Neill   Kevin Harrington
+## 3         no Christopher Guest Christopher Guest   Catherine O'Hara
+## 4         no   Martin Scorsese  Daniel Day-Lewis  Michelle Pfeiffer
+## 5         no       Stevan Mena     Samantha Dark R. Brandon Johnson
+## 6         no   Chung-ryoul Lee     Choi Won-kyun       Lee Sam-soon
+##                 actor3           actor4              actor5
+## 1 Lou Diamond Phillips    Emilio Rivera Joseph Julian Soria
+## 2    Patrick Warburton         Tom Long      Genevieve Mooy
+## 3         Parker Posey      Eugene Levy         Bob Balaban
+## 4         Winona Ryder Richard E. Grant        Alec McCowen
+## 5      Brandon Johnson    Heather Magee      Richard Glover
+## 6                  Moo             <NA>                <NA>
+##                               imdb_url
+## 1 http://www.imdb.com/title/tt1869425/
+## 2 http://www.imdb.com/title/tt0205873/
+## 3 http://www.imdb.com/title/tt0118111/
+## 4 http://www.imdb.com/title/tt0106226/
+## 5 http://www.imdb.com/title/tt0388230/
+## 6 http://www.imdb.com/title/tt1334549/
+##                                             rt_url
+## 1     //www.rottentomatoes.com/m/filly_brown_2012/
+## 2                 //www.rottentomatoes.com/m/dish/
+## 3  //www.rottentomatoes.com/m/waiting_for_guffman/
+## 4     //www.rottentomatoes.com/m/age_of_innocence/
+## 5 //www.rottentomatoes.com/m/10004684-malevolence/
+## 6          //www.rottentomatoes.com/m/old-partner/
+\end{verbatim}
+
+\begin{quote}
+Insert the data cleaning code (filling Null values, etc\ldots)
+\end{quote}
+
+\begin{verbatim}
+## [1] "Insert some code here please."
+\end{verbatim}
+
+\hypertarget{sda-homework-1.1}{%
+\section{SDA Homework 1.1}\label{sda-homework-1.1}}
+
+We chose the ``Films'' dataset and we are going to answer the following
+questions that we thought were interesting.
+
+\hypertarget{what-are-the-trends-over-the-years}{%
+\subsection{4. What are the trends over the
+years?}\label{what-are-the-trends-over-the-years}}
+
+\begin{verbatim}
+* Preferred month for releases? number of films by month (over the years? does it affect the score?)
+* Does the genre change over the years?
+* Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
+\end{verbatim}
+
+\hypertarget{do-actors-and-directors-have-a-higher-score-once-they-won-find-the-first-film-and-see-the-tendency-look-for-sudden-change}{%
+\subsection{5. Do actors and directors have a higher score once they
+won? (find the first film and see the tendency, look for sudden
+change)}\label{do-actors-and-directors-have-a-higher-score-once-they-won-find-the-first-film-and-see-the-tendency-look-for-sudden-change}}
+
+
+\end{document}
