@@ -247,12 +247,59 @@ ggplot(aes(x=best_actress_win), data=movies[movies$best_pic_nom=="yes",]) + geom
 ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar()
 ```
 
+> To the original question, it seems that best picture awarded films are in general more liked.
 
 > 4-What are the trends over the years?
 >	-Preferred month for releases? number of films by month (over the years? does it affect the score?)
 >	-Does the genre change over the years?
 >	-Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
 
+
+```{r}
+ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
+```
+
+> We will group the films by decade.
+
+```{r}
+movies$thtr_rel_decade <- as.numeric(format(movies$thtr_rel_date,"%Y")) - (as.numeric(format(movies$thtr_rel_date,"%Y")) %% 10)
+```
+
+
+```{r}
+ggplot(data=movies, aes(x = thtr_rel_decade, y = audience_score, group = thtr_rel_decade, fill = thtr_rel_decade)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies, aes(x = thtr_rel_date, y = audience_score, group = thtr_rel_decade, fill = thtr_rel_decade)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+> Mean score has sigly gone down. I would say there is a lack of old bad films, as there is a lack of points in the bottom-left corner.
+
+```{r}
+library(lubridate)
+```
+
+
+
+```{r}
+ggplot(movies[movies$thtr_rel_decade==1970,], aes(as.factor(month(thtr_rel_date)))) + 
+geom_bar(position='dodge') + xlab("Date") + ylab("Count")
+ggplot(movies[movies$thtr_rel_decade==1980,], aes(as.factor(month(thtr_rel_date)))) + 
+geom_bar(position='dodge') + xlab("Date") + ylab("Count")
+ggplot(movies[movies$thtr_rel_decade==1990,], aes(as.factor(month(thtr_rel_date)))) + 
+geom_bar(position='dodge') + xlab("Date") + ylab("Count")
+ggplot(movies[movies$thtr_rel_decade==2000,], aes(as.factor(month(thtr_rel_date)))) + 
+geom_bar(position='dodge') + xlab("Date") + ylab("Count")
+ggplot(movies[movies$thtr_rel_decade==2010,], aes(as.factor(month(thtr_rel_date)))) + 
+geom_bar(position='dodge') + xlab("Date") + ylab("Count")
+```
+
+> We coul argue that there used to be a pattern in the month release (in the 70's the preferred release was clearly on Christmas, and there is another peak on summer). This pattern evolves in time and gets lost.
+
+```{r}
+ggplot(data=movies, aes(x = as.factor(month(thtr_rel_date)), y = audience_score, group = as.factor(month(thtr_rel_date)), fill = as.factor(month(thtr_rel_date)))) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+```
+
+> There  seems to be no tendency to rate higher on certain months.
 
 ```{r}
 ggplot(data=movies, aes(x=thtr_rel_date, y=audience_score)) + geom_point(aes(col=best_pic_nom), size=3)
@@ -267,7 +314,17 @@ ggplot(data=movies,aes(thtr_rel_date, audience_score)) +
 
 
 ```{r}
-ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
-ggplot(movies, aes(x=thtr_rel_date)) + geom_histogram()
+ggplot(data=movies[movies$thtr_rel_decade==1970,], aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies[movies$thtr_rel_decade==1980,], aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies[movies$thtr_rel_decade==1990,], aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies[movies$thtr_rel_decade==2000,], aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
+
+ggplot(data=movies[movies$thtr_rel_decade==2010,], aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
 ```
+
+
+> Too little data, but we can see that Documentaries remain on the top over the years, and Musicals arise in the 90's
 
