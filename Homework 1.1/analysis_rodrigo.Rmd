@@ -328,3 +328,16 @@ ggplot(data=movies[movies$thtr_rel_decade==2010,], aes(x = reorder(genre, audien
 
 > Too little data, but we can see that Documentaries remain on the top over the years, and Musicals arise in the 90's
 
+
+
+> Some more EDA and test...
+
+```{r}
+commonTheme = list(labs(color="Density",fill="Density", x="Date", y="Overall score"))
+ggplot(data=movies,aes(runtime, audience_score)) + 
+  stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + 
+  scale_fill_continuous(low="green",high="red") +
+  guides(alpha="none") +
+  geom_point() + commonTheme
+```
+
