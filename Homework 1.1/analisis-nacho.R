@@ -82,7 +82,7 @@ summary(movies)
 ##################################################################################################################################################
 
 #We delete the columns we are not interested in for the analysis.
-movies <- subset(movies, select = -c(imdb_url, rt_url, top200))
+movies <- subset(movies, select = -c(imdb_url, rt_url, top200_box))
 ##################################################################################################################################################
 
 #1. What can we say about the relationship between audience scores and at least four of

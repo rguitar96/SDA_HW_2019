@@ -163,7 +163,7 @@ ggplot(data=movies, aes(x=audience_score)) + geom_density(aes(color = title_type
 ```
 
 ```{r}
-ggplot(data=movies, aes(x=critics_score)) + geom_histogram(bins=30, aes(color = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
+ggplot(data=movies, aes(x=critics_score)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
 ggplot(data=movies, aes(x=critics_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
 ```
 
@@ -191,6 +191,8 @@ ggplot(data=movies, aes(x = reorder(genre, imdb_rating, median, order=TRUE), y =
 	### - is there any difference on the audience/critics score by genre?
 
 ```{r}
+score = list();
+
 score$genre_score_agg = list(
   "critics" = aggregate(critics_score ~ genre , movies, mean),
   "audience" = aggregate(audience_score ~ genre, movies, mean),
@@ -213,13 +215,13 @@ score$genre_metrics_grid$genre_score_agg_rescaled =
 
 ggplot(score$genre_metrics_grid)+
   geom_tile(aes(x=metrics, y=year,fill=genre_score_agg_rescaled))+
-  scale_fill_distiller(palette = "RdPu") 
+  scale_fill_distiller( limits=c(0,1), palette = "RdPu") 
 ```
 
 ```{r}
 plot_number_movies_per_genre <-
   qplot(movies$genre, fill = movies$genre) + theme(legend.position = "none",
-                                                   axis.text.x = element_text(angle = 45, hjust = 1)) + ggtitle("Number of movies per genre") +
+                                                   axis.text.x = element_text(angle = 45, hjust = 1)) + ggtitle("Number of movies per     genre") +
   xlab("Genre") + ylab("Number of movies")
 
 
@@ -232,6 +234,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_all <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -255,6 +258,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_action <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -278,6 +282,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_animation <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -292,6 +297,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Art House & International
 art_house <- subset(movies, genre == "Art House & International")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -301,6 +307,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_art_house <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -315,6 +322,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Comedy
 comedy <- subset(movies, genre == "Comedy")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -338,6 +346,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Documentary
 documentary <- subset(movies, genre == "Documentary")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -347,6 +356,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_documentary <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -361,6 +371,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Drama
 drama <- subset(movies, genre == "Drama")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -370,6 +381,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_drama <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -384,6 +396,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Horror
 horror <- subset(movies, genre == "Horror")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -393,6 +406,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_horror <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -407,6 +421,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Musical & Performing Arts
 musical <- subset(movies, genre == "Musical & Performing Arts")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -416,6 +431,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_musical <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -439,6 +455,7 @@ mean_score <-
     ),
     "Source" = c("IMDB", "Audience", "Critics")
   )
+
 plot_mistery <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
   ymin = max(c(0, min(Score) - 10)),
@@ -453,6 +470,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Other
 other <- subset(movies, genre == "Other")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -476,6 +494,7 @@ position = position_dodge(width = 1)) +  geom_point(
 
 #Science Fiction & Fantasy
 science <- subset(movies, genre == "Science Fiction & Fantasy")
+
 mean_score <-
   data.frame(
     "Score" = c(
@@ -498,7 +517,6 @@ position = position_dodge(width = 1)) +  geom_point(
 ) + coord_flip() + theme(legend.position = "none") + ggtitle("Science Fiction & Fantasy")
 
 #Combine the plots...
-library(ggpubr)
 plot_combined_genre <-
   ggarrange(
     plot_all,
@@ -516,6 +534,8 @@ plot_combined_genre <-
     ncol = 3,
     nrow = 4
   )
+
+plot_combined_genre
 ```
 
 
@@ -552,106 +572,107 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar
 ```
 
 ```{r}
-best_pic_movies <- subset(movies, c(best_pic_nom == "yes"))
-#Add a column showing if they have won another award
-best_pic_movies$other_win <- NA
-if (best_pic_movies$best_actor_win == "yes" ||
-    best_pic_movies$best_actress_win == "yes" ||
-    best_pic_movies$best_dir_win == "yes") {
-  best_pic_movies$other_win <- "yes"
-} else{
-  best_pic_movies$other_win <- "yes"
-}
+ best_pic_movies <- subset(movies, c(best_pic_nom == "yes"))
 
-#Plots...
-library(plyr)
-#Best movies that have won another award
-best_movie_another_award <- count(best_pic_movies$other_win)
-best_movie_another_award <- best_movie_another_award %>%
-  arrange((freq)) %>%
-  mutate(lab.ypos = cumsum(freq) - 0.5 * freq)
+ #Add a column showing if they have won another award
+ best_pic_movies$other_win <- NA
 
-pie_another_award <-
-  ggplot(best_movie_another_award, aes(x = "", y = freq, fill = x)) +
-  geom_bar(width = 1,
-           stat = "identity",
-           color = "white") +
-  coord_polar("y", start = 0) +
-  theme_void() +
-  geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
-            position = position_stack(vjust = 0.5),
+ if (best_pic_movies$best_actor_win == "yes" ||
+     best_pic_movies$best_actress_win == "yes" ||
+     best_pic_movies$best_dir_win == "yes") {
+   best_pic_movies$other_win <- "yes"
+ } else{
+    best_pic_movies$other_win <- "yes"
+ }
+
+ #Plots...
+ #Best movies that have won another award
+ best_movie_another_award <- plyr::count(best_pic_movies$other_win)
+ best_movie_another_award <- best_movie_another_award %>%
+   arrange((freq)) %>%
+   mutate(lab.ypos = cumsum(freq) - 0.5 * freq)
+
+ pie_another_award <-
+   ggplot(best_movie_another_award, aes(x = "", y = freq, fill = x)) +
+   geom_bar(width = 1,
+            stat = "identity",
             color = "white") +
-  labs(fill = "Another award") +
-  ggtitle("Best movies with another award") +
-  theme(plot.title = element_text(size = 20, hjust = 0.5)) +
-  scale_fill_manual(values = "#00BFC4")
+   coord_polar("y", start = 0) +
+   theme_void() +
+   geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
+             position = position_stack(vjust = 0.5),
+             color = "white") +
+   labs(fill = "Another award") +
+   ggtitle("Best movies with another award") +
+   theme(plot.title = element_text(size = 20, hjust = 0.5)) +
+   scale_fill_manual(values = "#00BFC4")
 
-#Best movies that have won best actor award
-best_movie_best_actor <- count(best_pic_movies$best_actor_win)
-best_movie_best_actor <- best_movie_best_actor %>%
-  arrange((freq)) %>%
-  mutate(lab.ypos = cumsum(freq) - 0.5 * freq)
+ #Best movies that have won best actor award
+ best_movie_best_actor <- plyr::count(best_pic_movies$best_actor_win)
+ best_movie_best_actor <- best_movie_best_actor %>%
+   arrange((freq)) %>%
+   mutate(lab.ypos = cumsum(freq) - 0.5 * freq)
 
-pie_best_actor <-
-  ggplot(best_movie_best_actor, aes(x = "", y = freq, fill = x)) +
-  geom_bar(width = 1,
-           stat = "identity",
-           color = "white") +
-  coord_polar("y", start = 0) +
-  theme_void() +
-  geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
-            position = position_stack(vjust = 0.5),
+ pie_best_actor <-
+   ggplot(best_movie_best_actor, aes(x = "", y = freq, fill = x)) +
+   geom_bar(width = 1,
+            stat = "identity",
             color = "white") +
-  labs(fill = "Best actor") +
-  ggtitle("Best movies with best actor") +
-  theme(plot.title = element_text(size = 20, hjust = 0.5))
+   coord_polar("y", start = 0) +
+   theme_void() +
+   geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
+             position = position_stack(vjust = 0.5),
+             color = "white") +
+   labs(fill = "Best actor") +
+   ggtitle("Best movies with best actor") +
+   theme(plot.title = element_text(size = 20, hjust = 0.5))
 
-#Best movies that have won best actress award
-best_movie_best_actress <- count(best_pic_movies$best_actress_win)
-best_movie_best_actress <- best_movie_best_actress %>%
-  arrange((freq)) %>%
-  mutate(lab.ypos = cumsum(freq) - 1 * freq)
+ #Best movies that have won best actress award
+ best_movie_best_actress <- plyr::count(best_pic_movies$best_actress_win)
+ best_movie_best_actress <- best_movie_best_actress %>%
+   arrange((freq)) %>%
+   mutate(lab.ypos = cumsum(freq) - 1 * freq)
 
-pie_best_actress <-
-  ggplot(best_movie_best_actress, aes(x = "", y = freq, fill = x)) +
-  geom_bar(width = 1,
-           stat = "identity",
-           color = "white") +
-  coord_polar("y", start = 0) +
-  theme_void() +
-  geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
-            position = position_stack(vjust = 0.5),
+ pie_best_actress <-
+   ggplot(best_movie_best_actress, aes(x = "", y = freq, fill = x)) +
+   geom_bar(width = 1,
+            stat = "identity",
             color = "white") +
-  labs(fill = "Best actress") +
-  ggtitle("Best movies with best actress") +
-  theme(plot.title = element_text(size = 20, hjust = 0.5))
+   coord_polar("y", start = 0) +
+   theme_void() +
+   geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
+             position = position_stack(vjust = 0.5),
+             color = "white") +
+   labs(fill = "Best actress") +
+   ggtitle("Best movies with best actress") +
+   theme(plot.title = element_text(size = 20, hjust = 0.5))
 
-#Best movies that have won best director award
-best_movie_best_director <- count(best_pic_movies$best_dir_win)
-best_movie_best_director <- best_movie_best_director %>%
-  arrange((freq)) %>%
-  mutate(lab.ypos = cumsum(freq) - 0.9 * freq)
+ #Best movies that have won best director award
+ best_movie_best_director <- plyr::count(best_pic_movies$best_dir_win)
+ best_movie_best_director <- best_movie_best_director %>%
+   arrange((freq)) %>%
+   mutate(lab.ypos = cumsum(freq) - 0.9 * freq)
 
-pie_best_director <-
-  ggplot(best_movie_best_director, aes(x = "", y = freq, fill = x)) +
-  geom_bar(width = 1,
-           stat = "identity",
-           color = "white") +
-  coord_polar("y", start = 0) +
-  theme_void() +
-  geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
-            position = position_stack(vjust = 0.5),
+ pie_best_director <-
+   ggplot(best_movie_best_director, aes(x = "", y = freq, fill = x)) +
+   geom_bar(width = 1,
+            stat = "identity",
             color = "white") +
-  labs(fill = "Best director") +
-  ggtitle("Best movies with best director") +
-  theme(plot.title = element_text(size = 20, hjust = 0.5))
-pie_best_director
+   coord_polar("y", start = 0) +
+   theme_void() +
+   geom_text(aes(label = signif((freq / 7) * 100), digits = 2),
+             position = position_stack(vjust = 0.5),
+             color = "white") +
+   labs(fill = "Best director") +
+   ggtitle("Best movies with best director") +
+   theme(plot.title = element_text(size = 20, hjust = 0.5))
+ pie_best_director
 
-#Combine plots!
-plot_combined_awarded <-
-  ggarrange(
-    pie_another_award,
-    pie_best_actor,
+ #Combine plots!
+ plot_combined_awarded <-
+   ggarrange(
+     pie_another_award,
+     pie_best_actor,
     pie_best_actress,
     pie_best_director,
     ncol = 2,
@@ -790,13 +811,14 @@ ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = genre)) + facet_w
 > Let's see what is the amount of votes over the years that we have for all the films.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes)) + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ylim(min(movies$imdb_num_votes),quantile(movies$imdb_num_votes,.90)) + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes),method = 'loess', formula = 'y ~ x') + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ylim(min(movies$imdb_num_votes),quantile(movies$imdb_num_votes,.90)) + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
 ```
 
 > Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), method = 'loess', formula = 'y ~ x'
+) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
 ```
 
 > We can clearly see a decrease in overall score of this movies, but we can only asume that the newer the film, the more votes it gets and the worse it performs, but it could be because the quality in filmaking has woesened.
@@ -810,7 +832,7 @@ ggplot(data=movies,aes(thtr_rel_date, audience_score)) +
   stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + 
   scale_fill_continuous(low="green",high="red") +
   guides(alpha="none") +
-  geom_point() + commonTheme
+  commonTheme
 ```
 
 
@@ -820,7 +842,7 @@ ggplot(data=movies,aes(runtime, audience_score)) +
   stat_density2d(aes(fill=..level..,alpha=..level..),geom='polygon',colour='black') + 
   scale_fill_continuous(low="green",high="red") +
   guides(alpha="none") +
-  geom_point() + commonTheme
+   commonTheme
 ```
 
 
@@ -857,18 +879,4 @@ p3= ggplot(best_dirs, aes(y=imdb_rating, x=thtr_rel_year, color=director))+
 
 grid.arrange(p1, p2, p3, nrow = 3)
 
-
-all_actors = table((c(movies$actor1, 
-                      movies$actor2, 
-                      movies$actor3, 
-                      movies$actor4, 
-                      movies$actor5)))
 ```
-
-
-
-
-
-
-
-	
