@@ -504,7 +504,7 @@ if (best_pic_movies$best_actor_win == "yes" ||
     best_pic_movies$best_dir_win == "yes") {
   best_pic_movies$other_win <- "yes"
 } else{
-  best_pic_movies$other_win <- "yes"
+  best_pic_movies$other_win <- "no"
 }
 
 #Plots...
