@@ -1,6 +1,8 @@
 ---
 title: "final_analysis"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 
@@ -228,7 +230,7 @@ plot_number_movies_per_genre <-
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(movies$imdb_rating),
+      mean(movies$imdb_rating)*10,
       mean(movies$audience_score),
       mean(movies$critics_score)
     ),
@@ -237,7 +239,7 @@ mean_score <-
 
 plot_all <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -252,7 +254,7 @@ action_adventure <- subset(movies, genre == "Action & Adventure")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(action_adventure$imdb_rating),
+      mean(action_adventure$imdb_rating)*10,
       mean(action_adventure$audience_score),
       mean(action_adventure$critics_score)
     ),
@@ -261,7 +263,7 @@ mean_score <-
 
 plot_action <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -276,7 +278,7 @@ animation <- subset(movies, genre == "Animation")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(animation$imdb_rating),
+      mean(animation$imdb_rating)*10,
       mean(animation$audience_score),
       mean(animation$critics_score)
     ),
@@ -285,7 +287,7 @@ mean_score <-
 
 plot_animation <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -301,7 +303,7 @@ art_house <- subset(movies, genre == "Art House & International")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(art_house$imdb_rating),
+      mean(art_house$imdb_rating)*10,
       mean(art_house$audience_score),
       mean(art_house$critics_score)
     ),
@@ -310,7 +312,7 @@ mean_score <-
 
 plot_art_house <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -326,7 +328,7 @@ comedy <- subset(movies, genre == "Comedy")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(comedy$imdb_rating),
+      mean(comedy$imdb_rating)*10,
       mean(comedy$audience_score),
       mean(comedy$critics_score)
     ),
@@ -334,7 +336,7 @@ mean_score <-
   )
 plot_comedy <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -350,7 +352,7 @@ documentary <- subset(movies, genre == "Documentary")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(documentary$imdb_rating),
+      mean(documentary$imdb_rating)*10,
       mean(documentary$audience_score),
       mean(documentary$critics_score)
     ),
@@ -359,7 +361,7 @@ mean_score <-
 
 plot_documentary <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -375,7 +377,7 @@ drama <- subset(movies, genre == "Drama")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(drama$imdb_rating),
+      mean(drama$imdb_rating)*10,
       mean(drama$audience_score),
       mean(drama$critics_score)
     ),
@@ -384,7 +386,7 @@ mean_score <-
 
 plot_drama <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -400,7 +402,7 @@ horror <- subset(movies, genre == "Horror")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(horror$imdb_rating),
+      mean(horror$imdb_rating)*10,
       mean(horror$audience_score),
       mean(horror$critics_score)
     ),
@@ -409,7 +411,7 @@ mean_score <-
 
 plot_horror <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -425,7 +427,7 @@ musical <- subset(movies, genre == "Musical & Performing Arts")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(musical$imdb_rating),
+      mean(musical$imdb_rating)*10,
       mean(musical$audience_score),
       mean(musical$critics_score)
     ),
@@ -434,7 +436,7 @@ mean_score <-
 
 plot_musical <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -449,7 +451,7 @@ mistery <- subset(movies, genre == "Mystery & Suspense")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(mistery$imdb_rating),
+      mean(mistery$imdb_rating)*10,
       mean(mistery$audience_score),
       mean(mistery$critics_score)
     ),
@@ -458,7 +460,7 @@ mean_score <-
 
 plot_mistery <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -474,7 +476,7 @@ other <- subset(movies, genre == "Other")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(other$imdb_rating),
+      mean(other$imdb_rating)*10,
       mean(other$audience_score),
       mean(other$critics_score)
     ),
@@ -482,7 +484,7 @@ mean_score <-
   )
 plot_other <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -498,7 +500,7 @@ science <- subset(movies, genre == "Science Fiction & Fantasy")
 mean_score <-
   data.frame(
     "Score" = c(
-      mean(science$imdb_rating),
+      mean(science$imdb_rating)*10,
       mean(science$audience_score),
       mean(science$critics_score)
     ),
@@ -506,7 +508,7 @@ mean_score <-
   )
 plot_science <- ggplot(mean_score) + geom_linerange(aes(
   x = Source,
-  ymin = max(c(0, min(Score) - 10)),
+  ymin = 0,
   ymax = Score,
   colour = Source
 ),
@@ -537,6 +539,18 @@ plot_combined_genre <-
 
 plot_combined_genre
 ```
+
+Taking a look at the different lollipop charts, we can see different things:
+* Audience gives a higher score than Critics in 10/11 genres (90.9%). The only exception is the Documentary genre.
+*  IMDB gives a higher score than Critics in 9/11 genres (81.8%). The only exception is the Documentary and Musical & Performance genres.
+* IMDB gives a higher score than Audience in 7/11 genres (63.6%).
+* Genres like Documentary and Other receive similar ratings from all IMDB, Critics and Audience, whereas in genres like Comedy or Action & Adventure the ratings differ more.
+
+Taking this into account, we can say that the pattern observed in previously is maintained in the individual genres. Critics give the lowest ratings for almost all genres and IMDB and Audience alternate in giving the highest score. There is a difference in the raitings of the different sources according to the genre and this difference follows a pattern, which is more accentuated in some genres than in others.
+
+
+
+
 
 
 ## 3. Comparison best picture/oscar nominated and score/oscar nominated
@@ -572,7 +586,7 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar
 ```
 
 ```{r}
- best_pic_movies <- subset(movies, c(best_pic_nom == "yes"))
+ best_pic_movies <- subset(movies, c(best_pic_win == "yes"))
 
  #Add a column showing if they have won another award
  best_pic_movies$other_win <- NA
@@ -582,7 +596,7 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar
      best_pic_movies$best_dir_win == "yes") {
    best_pic_movies$other_win <- "yes"
  } else{
-    best_pic_movies$other_win <- "yes"
+    best_pic_movies$other_win <- "no"
  }
 
  #Plots...
@@ -666,7 +680,6 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar
    labs(fill = "Best director") +
    ggtitle("Best movies with best director") +
    theme(plot.title = element_text(size = 20, hjust = 0.5))
- pie_best_director
 
  #Combine plots!
  plot_combined_awarded <-
@@ -679,7 +692,13 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) + geom_bar
     nrow = 2
   )
 
+plot_combined_awarded
+```
 
+Looking at the pie charts, we can see that the movies in the dataset that have received the award for best film always receive another award. The award for best director is present in 6/7 movies, hinting that the quality of the director is mor influent than that of the actors and actresses in determining if the movie is awarded for best film.
+
+
+```{r}
 # -are oscar-awarded films more liked?
 #Audience score vs Best_pic_win
 plot_audience_vs_best_pic <-
@@ -702,6 +721,7 @@ plot_combined_best_pic <-
     ncol = 3,
     nrow = 1
   )
+plot_combined_best_pic
 
 #Audience score vs Best_dir_win
 plot_audience_vs_best_dir <-
@@ -724,6 +744,7 @@ plot_combined_best_dir <-
     ncol = 3,
     nrow = 1
   )
+plot_combined_best_dir
 
 #Audience score vs Best_actor_win
 plot_audience_vs_best_actor <-
@@ -747,6 +768,7 @@ plot_combined_best_actor <-
     ncol = 3,
     nrow = 1
   )
+plot_combined_best_actor
 
 #Audience score vs Best_actress_win
 plot_audience_vs_best_actress <-
@@ -772,6 +794,7 @@ plot_combined_best_actress <-
     ncol = 3,
     nrow = 1
   )
+plot_combined_best_actress
 ```
 
 
