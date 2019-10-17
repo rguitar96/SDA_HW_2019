@@ -160,18 +160,36 @@ We chose the "Films" dataset and we are going to answer the following questions 
 ## 1. Is there a relationship between the type/genre and score?
 
 ```{r}
-ggplot(data=movies, aes(x=audience_score)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
-ggplot(data=movies, aes(x=audience_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
+g1 <- ggplot(data=movies, aes(x=audience_score)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + theme(legend.position = "none")
+
+g2 <- ggplot(data=movies, aes(x=critics_score)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + theme(legend.position = "none")
+
+g3 <- ggplot(data=movies, aes(x=imdb_rating)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
+
+ggarrange(
+    g1,
+    g2,
+    g3,
+    ncol = 3,
+    nrow = 1,
+    widths = c(200,200,400),
+    labels = c("1", "2", "3")
+  )
 ```
 
 ```{r}
-ggplot(data=movies, aes(x=critics_score)) + geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
-ggplot(data=movies, aes(x=critics_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
-```
+g1 <- ggplot(data=movies, aes(x=audience_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
+g2 <- ggplot(data=movies, aes(x=critics_score)) + geom_density(aes(color = title_type), kernel = "gaussian")
+g3 <- ggplot(data=movies, aes(x=imdb_rating)) + geom_density(aes(color = title_type), kernel = "gaussian")
 
-```{r}
-ggplot(data=movies, aes(x=imdb_rating)) + geom_histogram(bins=30, aes(color = title_type), position = "identity", alpha = 0.7) + scale_color_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0")) + scale_fill_manual(values = c("#00AFBB", "#E7B800", "#0AFBB0"))
-ggplot(data=movies, aes(x=imdb_rating)) + geom_density(aes(color = title_type), kernel = "gaussian")
+ggarrange(
+    g1,
+    g2,
+    g3,
+    ncol = 3,
+    nrow = 1,
+    widths = c(200,200,400)
+  )
 ```
 
 

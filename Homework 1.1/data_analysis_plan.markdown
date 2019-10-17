@@ -13,7 +13,7 @@ If the p-value is lower than a 5% significance level (α=0.05 is used as a defau
 This question address a similar problem as the previous one, but with many different values for the qualitative explanatory variable. Despite not being sure on how to address this problem, our guess would be to perform the same analysis using an one-versus-all approach, computing the p-value of each of the different genres and comparing all of them individually against the significance level.  
 
 ### Question 2: Is there any difference on the audience/critics/imdb score by genre?
-We could perform a Principal Component Analysis to measure the percentage of variance explained of each of the three variables (audience_score, critics_score and imdb_rating) to see which of them is tha highest.  
+To know which is the variable that has the most effect we could perform a Principal Component Analysis to measure the percentage of variance explained of each of the three variables (audience_score, critics_score and imdb_rating) to see which of them is tha highest. We should compare the three vectors of the n-dimensional data space, which we expect to be highly correlated.  
 Before doing so, we should standarize the explanatory variables to the same scale. We are not sure about how to do this, as the variables do not seem to be distributed equally between variables.  
 This would tell us which of the three variables should be taken into account the most.  
 As graphs suggest that critics tend to evaluate the lowest, we could perform an hypothesis test on each of the genres under the null and alternative hypothesis of the critics score being respectivelly equal or lower than the rest of the scores.  
@@ -26,11 +26,12 @@ We find the procedure done at the first question to adapt well to this question 
 Where the null hypothesis states that being nominated to the best picture award does not affect the overall score, while the alternative hypothesis states that this has a positive impact on it.  
 ### Question 4: What are the trends over the years?  
 #### Which is the referred month for releases? Over the years? Does it affect the score?  
-Without much analysis, we could say that the most films are released on Christmas, Summer and Easter.  
+Despite seeing a clear trend of non-stationary data, after some research, we have concluded that the team lacks the knowledge to address (or even try to) this question yet.  
 #### Does the genre change over the years?  
-no idea  
+After some research, we have concluded that the team lacks the knowledge to address (or even try to) this question yet.  
 #### Do older films tend to have higher score/number of votes?  
-how to measure if the regression tends to go lower?  
+We would first perform a linear regression model to try to predict a film's score based on relevant variables, after normalizing them. Once we have done this, we can obtain the p-value of each of the variables based on the coefficients of the regression line. If the p-value of the date variable is lower than 0.05, we would consider this results statistically relevant and therefore conclude that there is a relationship (positive or negative, based on the coefficient) between the two variables (or so we think).  
 
 ### Question 5: Do actors and directors have a higher score once they won an Oscar?  
-comparing time series of the overall score before the award against time series of the overall score after the award?  
+This is a somewhat more complex question, as we are not well versed on the Time Series topic. However, we will try: our approach would be to divide the data for each ocurrence (directos and actors who have won an oscar) before and after winning the award. First, we should do some research to find the year they won the Oscar.  
+Once we have our data separated, we would perform a Time Series Regression for each of the ocurrences before and after. By comparing the regression slope of the variable score on the regression model, we could perform a hypothesis test to see if the change is relevant.  
