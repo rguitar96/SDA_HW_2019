@@ -1,6 +1,7 @@
 ---
 title: "final_analysis"
 output:
+  word_document: default
   html_document:
     df_print: paged
 ---
@@ -235,8 +236,14 @@ score$genre_metrics_grid$genre_score_agg_rescaled =
 
 ggplot(score$genre_metrics_grid)+
   geom_tile(aes(x=metrics, y=year,fill=genre_score_agg_rescaled))+
-  scale_fill_distiller( limits=c(0,1), palette = "RdPu") 
+  scale_fill_distiller( limits=c(0,1), palette = "PuOr") +
+  labs(title = "Comparision of scores across genres (Heatmap)", x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5))
 ```
+To compare the three different score types: Critic, Audience and IMDB to be comaral they must be rescaled as while Critic and Audience are of the range 1-100, IMDB is 1-10. After rescaling, to the range 0-1, a visual comparison of the different groups can be seen by arranging them on a heatmap. 
+
+The most striking feature is the lack of high scores for most genres, except for Documentary and Musical & Performing Arts. From the three groups Critics seem to be the most negative in their scoring, while Audience and IMDB to be more aligned. This clearly seen in Action & Adventure genre where Critics have a far lower score than the other two groups. This may be due to Critics having a different criteria on what constitutes a "good" movie but without details on the required metrics this is only speculation. Conversely though IMBD scores are most unaligned with the other groups for the two highest scoring genres, the reasoning for this can not be determined from the data available.
+
 
 ```{r}
 plot_number_movies_per_genre <-
