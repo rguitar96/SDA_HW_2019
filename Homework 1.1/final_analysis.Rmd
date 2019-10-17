@@ -903,3 +903,94 @@ p3= ggplot(best_dirs, aes(y=imdb_rating, x=thtr_rel_year, color=director))+
 grid.arrange(p1, p2, p3, nrow = 3)
 
 ```
+
+
+
+
+
+#Provided questions
+##1. What can we say about the relationship between audience scores and at least four of the other variables in this dataset?
+
+### Audience score vs Critics score
+```{r}
+ggplot(movies, aes(x = audience_score, y = critics_score)) + geom_point() + geom_smooth(method =
+                                                                                          lm)
+```
+
+### Audience score vs Genre and Audience Score vs Critics Score vs Genre
+```{r}
+ggplot(movies, aes(
+  x = reorder(genre, audience_score, FUN = median),
+  y = audience_score,
+  fill = genre
+)) + geom_boxplot()
+ggplot(movies, aes(
+  x = reorder(genre, critics_score, FUN = median),
+  y = critics_score,
+  fill = genre
+)) + geom_boxplot()
+
+movies$score_diff <- movies$audience_score - movies$critics_score
+ggplot(movies, aes(
+  x = reorder(genre, score_diff, FUN = mean),
+  y = score_diff,
+  fill = genre
+)) + geom_boxplot()
+```
+
+### Audience score vs Thtre_rel_month
+```{r}
+ggplot(movies, aes(x = thtr_rel_month)) + geom_histogram(color = "black", fill ="blue")
+
+by_month <- group_by(movies, thtr_rel_month)
+by_month_mean_score<-summarise(by_month, audience=mean(audience_score))
+plot(x=by_month_mean_score$thtr_rel_month,y=by_month_mean_score$audience)
+```
+###Audience score vs Best_pic_win
+```{r}
+ggplot(movies,
+       aes(x = best_pic_win, y = audience_score, fill = best_pic_win)) + geom_boxplot()
+```
+
+
+### Audience score vs Best_dir_win
+```{r}
+ggplot(movies,
+       aes(x = best_dir_win, y = audience_score, fill = best_dir_win)) + geom_boxplot()
+```
+
+### Audience score vs Best_actor_win/Best_actress_win
+```{r}
+ggplot(movies,
+       aes(x = best_actor_win, y = audience_score, fill = best_actor_win)) +
+  geom_boxplot()
+ggplot(movies,
+       aes(x = best_actress_win, y = audience_score, fill = best_actress_win)) +
+  geom_boxplot()
+```
+
+
+## 2. Is there a difference in the score given by audience members (or critics) for movies of different genres? And for movies with different MPAA ratings? If so, which categories seem to be significantly different for each other?
+```{r}
+ggplot(movies, aes(
+  x = reorder(genre, audience_score, FUN = median),
+  y = audience_score,
+  fill = genre
+)) + geom_boxplot()
+ggplot(movies, aes(
+  x = reorder(genre, critics_score, FUN = median),
+  y = critics_score,
+  fill = genre
+)) + geom_boxplot()
+
+ggplot(movies, aes(
+  x = reorder(mpaa_rating, audience_score, FUN = median),
+  y = audience_score,
+  fill = mpaa_rating
+)) + geom_boxplot()
+ggplot(movies, aes(
+  x = reorder(mpaa_rating, critics_score, FUN = median),
+  y = critics_score,
+  fill = mpaa_rating
+)) + geom_boxplot()
+```
