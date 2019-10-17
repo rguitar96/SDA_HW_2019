@@ -11,6 +11,7 @@ After applying the statistic of choice to the set of randomized samples, we woul
 If the p-value is lower than a 5% significance level (α=0.05 is used as a default level), the conclusion would be that the results are statistically relevant, thus rejecting H0. If the p-value is not lower than the significance level, it would mean that we cannot reject H0, and the results would be not statistically relevant.  
 #### Genre:
 This question address a similar problem as the previous one, but with many different values for the qualitative explanatory variable. Despite not being sure on how to address this problem, our guess would be to perform the same analysis using an one-versus-all approach, computing the p-value of each of the different genres and comparing all of them individually against the significance level.  
+Additionally, we think that a Kruskal-Wallis one-way analysis would fit this case, indicating if wether at least one sample stochastically dominates the rest of the population or not.  
 
 ### Question 2: Is there any difference on the audience/critics/imdb score by genre?
 To know which is the variable that has the most effect we could perform a Principal Component Analysis to measure the percentage of variance explained of each of the three variables (audience_score, critics_score and imdb_rating) to see which of them is tha highest. We should compare the three vectors of the n-dimensional data space, which we expect to be highly correlated.  
@@ -35,3 +36,9 @@ We would first perform a linear regression model to try to predict a film's scor
 ### Question 5: Do actors and directors have a higher score once they won an Oscar?  
 This is a somewhat more complex question, as we are not well versed on the Time Series topic. However, we will try: our approach would be to divide the data for each ocurrence (directos and actors who have won an oscar) before and after winning the award. First, we should do some research to find the year they won the Oscar.  
 Once we have our data separated, we would perform a Time Series Regression for each of the ocurrences before and after. By comparing the regression slope of the variable score on the regression model, we could perform a hypothesis test to see if the change is relevant.  
+
+References:
+https://handbook-5-1.cochrane.org/chapter_9/9_2_types_of_data_and_effect_measures.htm
+https://www.mathworks.com/discovery/time-series-regression.html
+https://en.wikipedia.org/wiki/Stepwise_regression
+https://en.wikipedia.org/wiki/Kruskal%E2%80%93Wallis_one-way_analysis_of_variance
