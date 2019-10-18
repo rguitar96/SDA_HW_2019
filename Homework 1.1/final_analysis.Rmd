@@ -711,12 +711,16 @@ From these findings we can see that overall IMDB and the Audience tend to give m
 
 ```{r}
 ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
++ labs(x = "Best picture nomination", y="Audience score")
 
 ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
++ labs(x = "Best actor win", y="Audience score")
 
 ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
++ labs(x = "Best actress win", y="Audience score")
 
 ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
++ labs(x = "Best director win", y="Audience score")
 ```
 
 ```{r}
@@ -725,18 +729,21 @@ ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_n
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
   theme_bw()
++ labs(x = "Best picture nomination", y="Audience score")
 
 ggplot(data=movies, aes(x = best_pic_nom, y = critics_score, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
   theme_bw()
++ labs(x = "Best picture nomination", y="Critics score")
 
 ggplot(data=movies, aes(x = best_pic_nom, y = imdb_rating, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
   theme_bw()
++ labs(x = "Best picture nomination", y="IMDB rating")
 ```
 
 
@@ -1287,6 +1294,9 @@ ggarrange(p1, p2, p3, nrow = 3, common.legend = TRUE, legend="bottom")
 
 ```
 
+To answer this question we visualized if the likelyhood of winning a director Oscar could be predicted by the tread of a director review scores. It was decided to only include those that had directed more than two movies to be able to properly chart their successes over the years. By plotting each director's movie releases (points) against the three differnt score categories we can see that most have a aarying level of succsess over the years  It can be seen the comparisons between the three groups vary but they approximately show the same trajectory for the directors over the years. It should be noted that in all three scoring categories only U-Turn releasede in 1997 and directed by Oliver Stone, scored less than half the available points. It can be shown then that, based on the available data, that directors win win Oscars have high scoring films.
+
+To see if these trends indcated likelyhood of winning an Oscar the years each director has won the best direct awrd were added to the plot using vertical lines. Unfortuanly due to the lack of data available in the dataset it is not possible to confidently determine any information. It could be speculated that a ariectors highest scoringmovie will win them an Oscar by looking at the data for Kathryn Bigelow and Woodly Allen. But as the movies won by Martin Scorses and Oliver Stone are not present in the dataset it is not possible to see the score trends at these times in their careers. Thus we are not able to answer the puestion we proposed. To be able to give a concrete answer for this question a larger dataset will be required. This idealy would not only include missing movies for the directors shown but for those removed for having insufficent having entries records.
 
 
 
