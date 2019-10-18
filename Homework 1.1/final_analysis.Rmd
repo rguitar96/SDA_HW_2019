@@ -710,17 +710,17 @@ From these findings we can see that overall IMDB and the Audience tend to give m
 
 
 ```{r}
-ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
-+ labs(x = "Best picture nomination", y="Audience score")
+ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
+labs(x = "Best picture nomination", y = "Audience score")
 
-ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
-+ labs(x = "Best actor win", y="Audience score")
+ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
+  labs(x = "Best actor win", y="Audience score")
 
-ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
-+ labs(x = "Best actress win", y="Audience score")
+ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
+  labs(x = "Best actress win", y="Audience score")
 
-ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()
-+ labs(x = "Best director win", y="Audience score")
+ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
+labs(x = "Best director win", y="Audience score")
 ```
 
 ```{r}
@@ -728,22 +728,22 @@ ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_n
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
-  theme_bw()
-+ labs(x = "Best picture nomination", y="Audience score")
+  theme_bw()+
+  labs(x = "Best picture nomination", y="Audience score")
 
 ggplot(data=movies, aes(x = best_pic_nom, y = critics_score, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
-  theme_bw()
-+ labs(x = "Best picture nomination", y="Critics score")
+  theme_bw()+
+  labs(x = "Best picture nomination", y="Critics score")
 
 ggplot(data=movies, aes(x = best_pic_nom, y = imdb_rating, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
-  theme_bw()
-+ labs(x = "Best picture nomination", y="IMDB rating")
+  theme_bw()+
+  labs(x = "Best picture nomination", y="IMDB rating")
 ```
 
 
