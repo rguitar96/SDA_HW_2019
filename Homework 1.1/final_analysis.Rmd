@@ -28,12 +28,12 @@ movies <- get(load("movies.RData"))
   #For R: 
 #head(movies) 
   #For R Markdown:
-range <- 1:8
-range <- list(range,range+8,range+16,range+24)
-knitr::kable(data[range[[1]]], caption = paste("From column",range[[1]][1],"to column",range[[1]][8]));
-knitr::kable(data[range[[2]]], caption = paste("From column",range[[2]][1],"to column",range[[2]][8]));
-knitr::kable(data[range[[3]]], caption = paste("From column",range[[3]][1],"to column",range[[3]][8]));
-knitr::kable(data[range[[4]]], caption = paste("From column",range[[4]][1],"to column",range[[4]][8]));
+# range <- 1:8
+# range <- list(range,range+8,range+16,range+24)
+# knitr::kable(data[range[[1]]], caption = paste("From column",range[[1]][1],"to column",range[[1]][8]));
+# knitr::kable(data[range[[2]]], caption = paste("From column",range[[2]][1],"to column",range[[2]][8]));
+# knitr::kable(data[range[[3]]], caption = paste("From column",range[[3]][1],"to column",range[[3]][8]));
+# knitr::kable(data[range[[4]]], caption = paste("From column",range[[4]][1],"to column",range[[4]][8]));
 
 ```
 
