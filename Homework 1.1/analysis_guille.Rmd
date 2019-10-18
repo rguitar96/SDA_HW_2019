@@ -14,6 +14,7 @@ library(ggplot2)
 library(lubridate)
 library(scales)
 library(ggpubr)
+library(RColorBrewer)
 ```
 
 > We load the data and give a quick look at the header
@@ -205,19 +206,35 @@ ggplot(movies, aes(fill = thtr_rel_decade)) +
 > Let's see what is the amount of votes over the years that we have for all the films.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes)) + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+ggplot(movies, aes(fill = thtr_rel_date)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'tomato') +
+  geom_jitter(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'limegreen', alpha = '0.5' ) +
+  theme_minimal() +
+  xlab("Date") +
+  ylab("# of Votes") +
+  ggtitle("# of votes rating movies over the years")
 ```
 
 > Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
 
 ```{r}
 ggplot(movies, aes(fill = thtr_rel_date)) +
-  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato') +
   theme_minimal() +
   xlab("Date") +
   ylab("Rating") +
   ylim (0, 10) +
   ggtitle("Rating of  movies over the years")
+```
+
+```{r}
+ggplot(movies, aes(fill = thtr_rel_date)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato') +
+  theme_minimal() +
+  xlab("Date") +
+  ylab("Rating") +
+  ylim (6, 8) +
+  ggtitle("Zoom: rating of  movies over the years")
 ```
 
 > We can clearly see a decrease in overall score of this movies, but since it's really minimal, it could also be because of random ratings variation.
