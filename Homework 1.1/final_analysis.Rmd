@@ -1,8 +1,8 @@
 ---
 title: "final_analysis"
 output:
-  word_document: default
   pdf_document: default
+  word_document: default
   html_document:
     df_print: paged
 ---
@@ -559,7 +559,7 @@ Taking a look at the different lollipop charts, we can see different things:
 * IMDB gives a higher score than Audience in 7/11 genres (63.6%).
 * Genres like Documentary and Other receive similar ratings from all IMDB, Critics and Audience, whereas in genres like Comedy or Action & Adventure the ratings differ more.
 
-Taking this into account, we can say that the pattern observed in previously is maintained in the individual genres. Critics give the lowest ratings for almost all genres and IMDB and Audience alternate in giving the highest score. There is a difference in the raitings of the different sources according to the genre and this difference follows a pattern, which is more accentuated in some genres than in others.
+Taking this into account, we can say that the pattern observed in previously is maintained in the individual genres. Critics give the lowest ratings for almost all genres and IMDB and Audience alternate in giving the highest score. There is a difference in the ratings of the different sources according to the genre and this difference follows a pattern, which is more accentuated in some genres than in others.
 
 ```{r}
 mean_score <-
@@ -694,7 +694,8 @@ plot_combined_mpaa <-ggarrange(
 plot_combined_mpaa
 ```
 
-If we now make a similar comparisson for the MPAA ratings, we can see the following:
+If we now make a similar comparison for the MPAA ratings, we can see the following:
+
 * Audience gives a higher score than Critics in 4/6 MPAA ratings (66.6%). The two MPAA ratings where Critics give a higher score are NC-17 and Unrated.
 * IMDB gives a higher score than Critics in 4/6 MPAA ratings (66.6%). Again, the two exceptions are NC-17 and Unrated.
 * IMDB tends to give a higher score than Audience. This happens, again, in 4/6 MPAA ratings (66.6%). The MPAA ratings where this does not happen are G and Unrated.
@@ -893,13 +894,13 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) +
 plot_combined_awarded
 ```
 
-Looking at the pie charts, we can see that the movies in the dataset that have received the award for best film always have a cast/crew member with another award. It must be taken into account that the actors, actresses and directors could have received their award at any point in their career, not necessarily for the awarded film in which they participate. That is, the pie charts are not meant to show that if a cast/crew member receives an award for one film, that film is more likely to be awarded itself. However, the plots can serve to study the relationship between having high quality proffesionals working in a movie and that movie receiving an award. 
+Looking at the pie charts, we can see that the movies in the dataset that have received the award for best film always have a cast/crew member with another award. It must be taken into account that the actors, actresses and directors could have received their award at any point in their career, not necessarily for the awarded film in which they participate. That is, the pie charts are not meant to show that if a cast/crew member receives an award for one film, that film is more likely to be awarded itself. However, the plots can serve to study the relationship between having high quality professionals working in a movie and that movie receiving an award. 
 
-Considering this, we can see that most awarded movies in this dataset have a director that has or will receive an award. The presence of awarded directors in 6/7 movies highly surpasses the proportion of awarded movies with awarded actors and actresses. This hints that the quality of the director is mor influent than that of the actors and actresses in determining if the movie is awarded for best film. This deduction makes sense, since actors are only responsible for playing their roles whereas the director's decisions involve all the elements of a film.
+Considering this, we can see that most awarded movies in this dataset have a director that has or will receive an award. The presence of awarded directors in 6/7 movies highly surpasses the proportion of awarded movies with awarded actors and actresses. This hints that the quality of the director is more influential than that of the actors and actresses in determining if the movie is awarded for best film. This deduction makes sense, since actors are only responsible for playing their roles whereas the director's decisions involve all the elements of a film.
 
 
 ```{r}
-# -are oscar-awarded films more liked?
+# -Are oscar-awarded films more liked?
 #Audience score vs Best_pic_win
 plot_audience_vs_best_pic <-
   ggplot(movies,
@@ -907,7 +908,8 @@ plot_audience_vs_best_pic <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Audience", x = "Best picture award", y = "Score")
+  labs(title = "Audience", x = "Best picture award", y = "Score")+
+  ylim(0,100)
 #Critics score vs Best_pic_win
 plot_critics_vs_best_pic <-
   ggplot(movies,
@@ -915,14 +917,16 @@ plot_critics_vs_best_pic <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Critics", x = "Best picture award", y = "Score")
+  labs(title = "Critics", x = "Best picture award", y = "Score")+
+  ylim(0,100)
 #IMDB score vs Best_pic_win
 plot_imdb_vs_best_pic <-
-  ggplot(movies, aes(x = best_pic_win, y = imdb_rating, fill = best_pic_win)) +
+  ggplot(movies, aes(x = best_pic_win, y = imdb_rating*10, fill = best_pic_win)) +
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Best picture award", y = "Score") 
+  labs(title = "IMDB", x = "Best picture award", y = "Score")+
+  ylim(0,100) 
 #Combine the plots...
 plot_combined_best_pic <-
   ggarrange(
@@ -931,10 +935,15 @@ plot_combined_best_pic <-
     plot_imdb_vs_best_pic,
     ncol = 3,
     nrow = 1
-  )
+  )+
+  labs(title = "comparison of the score for awarded and non-awarded movies (Box plot)", x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5))
+
 plot_combined_best_pic
 
 ```
+
+We can see that, for the three sources of score, awarded movies are reviewed more positively. 
 
 ```{r}
 
@@ -944,20 +953,23 @@ plot_audience_vs_best_dir <-
          aes(x = best_dir_win, y = audience_score, fill = best_dir_win)) +
   geom_boxplot() +
   theme(legend.position = "none") +
-  labs(title = "Audience", x = "Best director award", y = "Score")
+  labs(title = "Audience", x = "Awarded director", y = "Score")+
+  ylim(0,100)
 #Critics score vs Best_dir_win
 plot_critics_vs_best_dir <-
   ggplot(movies,
          aes(x = best_dir_win, y = critics_score, fill = best_dir_win)) +
   geom_boxplot() +
   theme(legend.position = "none") +
-  labs(title = "Critics", x = "Best director award", y = "Score")
+  labs(title = "Critics", x = "Awarded director", y = "Score")+
+  ylim(0,100)
 #IMDB score vs Best_dir_win
 plot_imdb_vs_best_dir <-
-  ggplot(movies, aes(x = best_dir_win, y = imdb_rating, fill = best_dir_win)) +
+  ggplot(movies, aes(x = best_dir_win, y = imdb_rating*10, fill = best_dir_win)) +
   geom_boxplot() +
   theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Best director award", y = "Score")
+  labs(title = "IMDB", x = "Awarded director", y = "Score")+
+  ylim(0,100)
 #Combine the plots...
 plot_combined_best_dir <-
   ggarrange(
@@ -966,9 +978,14 @@ plot_combined_best_dir <-
     plot_imdb_vs_best_dir,
     ncol = 3,
     nrow = 1
-  )
+  )+
+  labs(title = "Score comparison for movies w/ or w/o an awarded director (Box plot)", x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5))
+
 plot_combined_best_dir
 ```
+
+If we now compare the score of movies that have a director that has an award with those that do not, we can tell that the former receive a higher score.
 
 ```{r}
 #Audience score vs Best_actor_win
@@ -978,7 +995,8 @@ plot_audience_vs_best_actor <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Audience", x = "Best actor award", y = "Score")
+  labs(title = "Audience", x = "Awarded actor", y = "Score")+
+  ylim(0,100)
 #Critics score vs Best_dir_win
 plot_critics_vs_best_actor <-
   ggplot(movies,
@@ -986,15 +1004,17 @@ plot_critics_vs_best_actor <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") + 
-  labs(title = "Critics", x = "Best actor award", y = "Score")
+  labs(title = "Critics", x = "Awarded actor", y = "Score")+
+  ylim(0,100)
 #IMDB score vs Best_dir_win
 plot_imdb_vs_best_actor <-
   ggplot(movies,
-         aes(x = best_actor_win, y = imdb_rating, fill = best_actor_win)) +
+         aes(x = best_actor_win, y = imdb_rating*10, fill = best_actor_win)) +
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Best actor award", y = "Score")
+  labs(title = "IMDB", x = "Awarded actor", y = "Score")+
+  ylim(0,100)
 #Combine the plots...
 plot_combined_best_actor <-
   ggarrange(
@@ -1003,9 +1023,14 @@ plot_combined_best_actor <-
     plot_imdb_vs_best_actor,
     ncol = 3,
     nrow = 1
-  )
+  )+
+  labs(title = "Score comparison for movies w/ or w/o an awarded actor (Box plot)", x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5))
+
 plot_combined_best_actor
 ```
+
+However, if we compare the score of movies that star an actor that has been awarded with those that do not, we can see that there is not a big difference in the score each group receives.
 
 ```{r}
 #Audience score vs Best_actress_win
@@ -1015,8 +1040,8 @@ plot_audience_vs_best_actress <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Audience", x = "Best actress award", y = "Score")
-  
+  labs(title = "Audience", x = "Awarded actress", y = "Score")+
+  ylim(0,100)
 
 #Critics score vs Best_dir_win
 plot_critics_vs_best_actress <-
@@ -1025,15 +1050,19 @@ plot_critics_vs_best_actress <-
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Critics", x = "Best actress award", y = "Score")
+  labs(title = "Critics", x = "Awarded actress", y = "Score")+
+  ylim(0,100)
+
 #IMDB score vs Best_dir_win
 plot_imdb_vs_best_actress <-
   ggplot(movies,
-         aes(x = best_actress_win, y = imdb_rating, fill = best_actress_win)) +
+         aes(x = best_actress_win, y = imdb_rating*10, fill = best_actress_win)) +
   geom_boxplot() +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Best actress award", y = "Score")
+  labs(title = "IMDB", x = "Awarded actress", y = "Score")+
+  ylim(0,100)
+
 #Combine the plots...
 plot_combined_best_actress <-
   ggarrange(
@@ -1042,12 +1071,14 @@ plot_combined_best_actress <-
     plot_imdb_vs_best_actress,
     ncol = 3,
     nrow = 1
-  )
+  )+
+  labs(title = "Score comparison for movies w/ or w/o an awarded actress (Box plot)", x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5))
+
 plot_combined_best_actress
 ```
 
-
-
+A similar result is obtained if we compare the scores of movies where an awarded actress played a role and those where she did not. The scores are similar for both groups of movies.
 
 
 ## 4. What are the trends over the years?
