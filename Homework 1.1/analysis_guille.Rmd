@@ -12,6 +12,8 @@ output:
 ```{r}
 library(ggplot2)
 library(lubridate)
+library(scales)
+library(ggpubr)
 ```
 
 > We load the data and give a quick look at the header
@@ -74,21 +76,126 @@ We chose the "Films" dataset and we are going to answer the following questions 
 > We start to count the movies per months to see if there is a pattern in all this time in the release months.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = thtr_rel_month), width = 0.5) + theme_minimal() + xlab("Month") + ylab("# of Films") + ggtitle("Number of Films released per month each decade ") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+ggplot(movies, aes(fill = thtr_rel_decade)) + 
+  geom_bar(aes(x = thtr_rel_month, (..count..)/sum(..count..))) + 
+  theme_minimal() +
+  xlab("Month") + 
+  ylab("# of Films") +
+  ggtitle("Number of Films released per month each decade ") + 
+  scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + 
+  scale_x_continuous(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")) + 
+  scale_y_continuous(labels=scales::percent)
 ```
 
 > We can see that overall there is a "pattern" of releases in the months of January, June, October and December, so let's take a better look at this data by decade.
 > We breakdown the previous graphs grouping the data by decade.
 
+> We show the data by overall amount of movies and proportionally.
+
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = thtr_rel_month), width = 0.5) + facet_wrap(thtr_rel_decade ~ .) + theme_minimal() + xlab("Month") + ylab("# of Films") + ggtitle("Number of Films released per month each decade w/ breakdown") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = thtr_rel_month), width = 0.5) +
+  facet_wrap(thtr_rel_decade ~ .) +
+  #facet_wrap(facets = "thtr_rel_decade", ) +
+  theme_minimal() + 
+  xlab("Month") +
+  ylab("Number of Films") +
+  ggtitle("Number of Films released per month each decade w/ breakdown") +
+  scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + 
+  scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+```
+```{r}
+ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = thtr_rel_month, y = (..prop..)), width = 0.5) +
+  facet_wrap(thtr_rel_decade ~ .) +
+  theme_minimal() +
+  xlab("Month") +
+  ylab("% of Films") +
+  ggtitle("% Amount of Films released per month each decade w/ breakdown ") +
+  scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
+  scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))  +
+  scale_y_continuous(labels=scales::percent)
 ```
 > Now we can see clearly that since the 70's there has been a trend of two moments in the years to release movies in theaters: in summer (June) and in the winter Holidays (December and January). However, in this last decade, we only see a spike in December.
 
 ### - Does the genre change over the years (by decade)?
+```{r}
+ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..))) + 
+  #facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
+  theme_minimal() + 
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+```
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = genre)) + facet_wrap(thtr_rel_decade ~ .) + theme_minimal() + xlab("Genre") + ylab("# of Films") + ggtitle("Genre of Films released each decade w/ breakdown") + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + coord_flip()
+# All the plots individually:
+gen_1970 <- ggplot(movies[movies$thtr_rel_decade==1970,]) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'tomato') + 
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() +
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+
+gen_1980 <- ggplot(movies[movies$thtr_rel_decade==1980,]) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'gold') + 
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() +
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+
+gen_1990 <- ggplot(movies[movies$thtr_rel_decade==1990,]) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'limegreen') + 
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() +
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+
+gen_2000 <- ggplot(movies[movies$thtr_rel_decade==2000,]) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'skyblue') + 
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() + 
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+
+gen_2010 <- ggplot(movies[movies$thtr_rel_decade==2010,]) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'orchid') + 
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() + 
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
+
+# Facewrap of all the plots
+ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = genre, y = (..count..)/sum(..count..))) + 
+  # all options & modifiers  
+  facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
+  theme_minimal() + 
+  xlab("Genres") +
+  ylab("% of Films") +
+  ggtitle("Genre of Films released each decade w/ breakdown") + 
+  scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
+  scale_y_continuous(labels=scales::percent) +
+  coord_flip()
 ```
 
 > We can see an increment over the years in the Documentary Genre, as well as in Mystery and Suspense. 
@@ -98,21 +205,20 @@ ggplot(movies, aes(fill = thtr_rel_decade)) + geom_bar(aes(x = genre)) + facet_w
 > Let's see what is the amount of votes over the years that we have for all the films.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes)) + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ylim(min(movies$imdb_num_votes),quantile(movies$imdb_num_votes,.90)) + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes)) + geom_point(aes(x = thtr_rel_date, y = imdb_num_votes)) + theme_minimal() + xlab("Date") + ylab("# of Votes") + ggtitle("# of votes rating movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
 ```
 
 > Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
+ggplot(movies, aes(fill = thtr_rel_date)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) +
+  theme_minimal() +
+  xlab("Date") +
+  ylab("Rating") +
+  ylim (0, 10) +
+  ggtitle("Rating of  movies over the years")
 ```
 
-> We can clearly see a decrease in overall score of this movies, but we can only asume that the newer the film, the more votes it gets and the worse it performs, but it could be because the quality in filmaking has woesened.
+> We can clearly see a decrease in overall score of this movies, but since it's really minimal, it could also be because of random ratings variation.
 
-### 5. Do actors and directors have a higher score once they won? (find the first film and see the tendency, look for sudden change)
-
-```{r}
-cat("Testing...")
-#ggplot(movies) + geom_col(aes(x = imdb_rating, y = director, fill = director[best_dir_win=="yes"]))
-#ggplot(movies, aes(fill = thtr_rel_date)) + geom_smooth(aes(x = thtr_rel_date, y = imdb_rating)) + theme_minimal() + xlab("Date") + ylab("Rating") + ggtitle("Rating of  movies over the years") # + scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's"))
-```
