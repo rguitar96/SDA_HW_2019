@@ -1138,7 +1138,7 @@ g4_2_7.1
 > Let's see what is the amount of votes over the years that we have for all the films.
 
 ```{r}
-g4_2_1 <-  ggplot(movies, aes(fill = thtr_rel_date)) +
+g4_3_1 <-  ggplot(movies, aes(fill = thtr_rel_date)) +
   geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'tomato', show.legend = FALSE) +
   geom_jitter(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'limegreen', alpha = '0.5' , show.legend = FALSE) +
   theme_minimal() +
@@ -1146,13 +1146,13 @@ g4_2_1 <-  ggplot(movies, aes(fill = thtr_rel_date)) +
   ylab("Number of Votes") +
   ggtitle("Number of movie rating vote over the years")
 
-g4_2_1
+g4_3_1
 ```
 
 > Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
 
 ```{r}
-g4_2_2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
+g4_3_2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
   geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato', show.legend = FALSE) +
   theme_minimal() +
   xlab("Date") +
@@ -1160,12 +1160,13 @@ g4_2_2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
   ylim (0, 10) +
   ggtitle("Rating of movies over the years")
 
-ggarrange(g4_2_1, g4_2_2)
+g4_3 <- ggarrange(g4_3_1, g4_3_2)
+g4_3
 ```
 > Let's zoom to see if we can see more clearly if there is some change
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) +
+g4_3_2.2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
   geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato') +
   theme_minimal() +
   xlab("Date") +
