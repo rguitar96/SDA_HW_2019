@@ -1,10 +1,10 @@
 ---
 title: "final_analysis"
 output:
-  pdf_document: default
   word_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 
@@ -115,13 +115,24 @@ movies$actor5[movies$title == "The Illusionist (L'illusionniste)"] <-
   "Eleanor Tomlinson"
 #https://en.wikipedia.org/wiki/The_Illusionist_(2006_film)
 
+# We found that one movie had won a movie award but it didn't appear as nominated
+ggplot(aes(x=best_pic_nom), data=movies[movies$best_pic_win=="yes",]) +
+  geom_bar(aes( fill = best_dir_win)) +
+  theme_minimal() +
+  xlab("") + 
+  ylab("Number of samples") +
+  scale_fill_discrete("Best picture nominated")
+
+movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]
+movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]$best_pic_nom <- "yes"
+
 
 #Column manipulation
 movies$thtr_rel_date <- as.Date(paste0(movies$thtr_rel_year, "-", movies$thtr_rel_month, "-", movies$thtr_rel_day))
 movies$dvd_rel_date <- as.Date(paste0(movies$dvd_rel_year, "-", movies$dvd_rel_month, "-", movies$dvd_rel_day))
 
 movies$thtr_rel_decade <- as.numeric(format(movies$thtr_rel_date,"%Y")) - (as.numeric(format(movies$thtr_rel_date,"%Y")) %% 10)
-movies$thtr_rel_decade <- as.factor(movies$thtr_rel_decade)
+movies$thtr_rel_decade <- as.factor(paste(as.factor(movies$thtr_rel_decade),'s', sep = '\''))
 
 movies$top200_box <- NULL
 
@@ -175,7 +186,7 @@ We chose the "Films" dataset and we are going to answer the following questions 
 ## 1. Is there a relationship between the type/genre and score?
 
 ```{r}
-g1_1 <- ggplot(data=movies, aes(x=audience_score)) +
+g1_1_1 <- ggplot(data=movies, aes(x=audience_score)) +
   geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) +
   scale_color_manual(values = c("tomato", "skyblue", "limegreen")) +
   scale_fill_manual(values = c("tomato", "skyblue", "limegreen")) +
@@ -186,7 +197,7 @@ g1_1 <- ggplot(data=movies, aes(x=audience_score)) +
   theme_minimal() +
   theme(legend.position = "none")
 
-g2_1 <- ggplot(data=movies, aes(x=critics_score)) +
+g1_1_2 <- ggplot(data=movies, aes(x=critics_score)) +
   geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) +
   scale_color_manual(values = c("tomato", "skyblue", "limegreen")) +
   scale_fill_manual(values = c("tomato", "skyblue", "limegreen")) +
@@ -197,99 +208,120 @@ g2_1 <- ggplot(data=movies, aes(x=critics_score)) +
   theme_minimal() +
   theme(legend.position = "none")
 
-g3_1 <- ggplot(data=movies, aes(x=imdb_rating)) +
+g1_1_3 <- ggplot(data=movies, aes(x=imdb_rating)) +
   geom_histogram(bins=30, aes(fill = title_type), position = "identity", alpha = 0.7) + 
   scale_color_manual(values = c("tomato", "skyblue", "limegreen")) +
   scale_fill_manual("Title Type",values = c("tomato", "skyblue", "limegreen")) +
-  scale_x_continuous(breaks = 0:10,labels = seq(0,100,10)) + 
+  scale_x_continuous(breaks = seq(0,8,2),labels = seq(0,100,25)) + 
   xlab("IMDB Score") +
   ylab("") +
   ylim(0,75) +
   theme_minimal() +
   theme(legend.position = "right")
 
-
-ggarrange(
-    g1_1,
-    g2_1,
-    g3_1,
+g1_1 <- ggarrange(
+    g1_1_1,
+    g1_1_2,
+    g1_1_3,
     ncol = 3,
     nrow = 1,
-    widths = c(200,200,330),
-    labels = c("1", "2", "3")
-  )
+    widths = c(200,200,330)
+  ) %>% annotate_figure(top = text_grob("Distribution of Movies for each scoring source", face = "bold"))
+
+g1_1
+
 ```
 
 ```{r}
-g1_2 <- ggplot(data=movies, aes(x=audience_score)) +
+g1_2_1 <- ggplot(data=movies, aes(x=audience_score)) +
   geom_density(aes(fill = title_type), kernel = "gaussian", alpha = 0.3)+
-  scale_fill_manual("Title Types",values = c("tomato", "skyblue", "limegreen")) + 
+  scale_fill_manual("Title Type",values = c("tomato", "skyblue", "limegreen")) + 
   xlab("Audience Score") +
   ylab("Density") +
+  xlim(0,100) +
+  ylim(0,0.11) +
   theme_minimal() +
   theme(legend.position = "none")
 
-g2_2 <- ggplot(data=movies, aes(x=critics_score)) +
+g1_2_2 <- ggplot(data=movies, aes(x=critics_score)) +
   geom_density(aes(fill = title_type), kernel = "gaussian", alpha = 0.3)+
-  scale_fill_manual("Title Types",values = c("tomato", "skyblue", "limegreen")) + 
+  scale_fill_manual("Title Type",values = c("tomato", "skyblue", "limegreen")) + 
   #scale_y_continuous(seq(0,1,0.1)) +
   xlab("Critics Score") +
   ylab("") +
+  xlim(0,100) +
+  ylim(0,0.11) +
   theme_minimal() +
   theme(legend.position = "none")
 
-g3_2 <- ggplot(data=movies, aes(x=imdb_rating)) +
+g1_2_3 <- ggplot(data=movies, aes(x=imdb_rating*10)) +
   geom_density(aes(fill = title_type), kernel = "gaussian", alpha = 0.3)+
-  scale_fill_manual("Title Types",values = c("tomato", "skyblue", "limegreen")) + 
+  scale_fill_manual("Title Type",values = c("tomato", "skyblue", "limegreen")) + 
   #scale_y_continuous(seq(0,1,0.1)) +
   xlab("IMDB Score") +
   ylab("") +
+  xlim(0,100) +
+  ylim(0,0.11) +
   theme_minimal() +
   theme(legend.position = "right")
 
-ggarrange(
-    g1_2,
-    g2_2,
-    g3_2,
+g1_2 <- ggarrange(
+    g1_2_1,
+    g1_2_2,
+    g1_2_3,
     ncol = 3,
     nrow = 1,
-    widths = c(200,200,330),
-    labels = c("1", "2", "3")
-  )
+    widths = c(200,200,330)
+  ) %>% annotate_figure( top = text_grob("Distribution of Movies for each scoring source", face = "bold"))
+
+g1_2
+
 ```
 
 
 ```{r}
-ggplot(data=movies, aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) +
+g1_3_1 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, order=TRUE), y = audience_score, group = genre, fill = genre)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
   xlab("Genre") +
+  #xlim(0,100) +
   ylab("Score") +
   theme_minimal() +
   coord_flip()
-```
 
-```{r}
-ggplot(data=movies, aes(x = reorder(genre, critics_score, median, order=TRUE), y = critics_score, group = genre, fill = genre)) +
+g1_3_2 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, order=TRUE), y = critics_score, group = genre, fill = genre)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
-  xlab("Genre") +
+  xlab(" ") +
+  #xlim(0,100) +
   ylab("Score") +
   theme_minimal() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   coord_flip()
-```
 
-```{r}
-ggplot(data=movies, aes(x = reorder(genre, imdb_rating, median, order=TRUE), y = imdb_rating, group = genre, fill = genre)) +
+g1_3_3 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, order=TRUE), y = imdb_rating*10, group = genre, fill = genre)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
-  xlab("Genre") +
+  xlab(" ") +
+  #xlim(0,100) +
   ylab("Score") +
   theme_minimal() +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   coord_flip()
+
+g1_3 <- ggarrange(
+    g1_3_1,
+    g1_3_2,
+    g1_3_3,
+    ncol = 3,
+    nrow = 1,
+    widths = c(300,200,200)
+  ) %>% annotate_figure( top = text_grob("Genre rating of Movies for each scoring source", face = "bold"))
+
+g1_3
 ```
 
 
@@ -321,17 +353,19 @@ score$genre_metrics_grid$genre_score_agg_rescaled =
     rescale(score$genre_score_agg$audience$audience_score, from=(c(1,100))), 
     rescale(score$genre_score_agg$imdb$imdb_rating, from=(c(1,10))))
 
-ggplot(score$genre_metrics_grid)+
+g2_1.1 <- ggplot(score$genre_metrics_grid)+
   geom_tile(aes(x=metrics, y=year,fill=genre_score_agg_rescaled))+
   scale_fill_distiller( limits=c(0,1), palette = "PuOr") +
-  labs(title = "Comparision of scores across genres (Heatmap)", x = "", y="", fill="")+
+  labs(title = "Comparision of scores across genres (Heatmap)", face = "bold", x = "", y="", fill="")+
+  theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
+
+g2_1.1
 ```
 
 To compare the three different score types: Critic, Audience and IMDB to be comaral they must be rescaled as while Critic and Audience are of the range 1-100, IMDB is 1-10. After rescaling, to the range 0-1, a visual comparison of the different groups can be seen by arranging them on a heatmap. 
 
 The most striking feature is the lack of high scores for most genres, except for Documentary and Musical & Performing Arts. From the three groups Critics seem to be the most negative in their scoring, while Audience and IMDB to be more aligned. This clearly seen in Action & Adventure genre where Critics have a far lower score than the other two groups. This may be due to Critics having a different criteria on what constitutes a "good" movie but without details on the required metrics this is only speculation. Conversely though IMBD scores are most unaligned with the other groups for the two highest scoring genres, the reasoning for this can not be determined from the data available.
-
 
 ```{r}
 mean_score <-
@@ -345,8 +379,11 @@ mean_score <-
   )
 
 plot_all <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
-  geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(), axis.text.y = element_blank()) + ggtitle("All genres")
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
+  geom_point(aes(  colour=Source) ) +
+  xlim(0, 88) +
+  theme(legend.position = "none",axis.title.x = element_blank(), axis.text.y = element_blank()) +
+  ggtitle("All genres")
 
 #Action and adventure
 action_adventure <- subset(movies, genre == "Action & Adventure")
@@ -361,8 +398,11 @@ mean_score <-
   )
 
 plot_action <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
-  geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Action & Adventure")
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
+  geom_point(aes(  colour=Source) ) +
+  xlim(0, 88) +
+  theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) +
+  ggtitle("Action & Adventure")
 
 #Animation
 animation <- subset(movies, genre == "Animation")
@@ -377,7 +417,7 @@ mean_score <-
   )
 
 plot_animation <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Animation")
 
 #Art House & International
@@ -394,7 +434,7 @@ mean_score <-
   )
 
 plot_art_house <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.text.y = element_blank()) + ggtitle("Art House & International")
 
 #Comedy
@@ -410,7 +450,7 @@ mean_score <-
     "Source" = c("IMDB", "Audience", "Critics")
   )
 plot_comedy <-ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Comedy")
 
 #Documentary
@@ -427,7 +467,7 @@ mean_score <-
   )
 
 plot_documentary <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Documentary")
 
 #Drama
@@ -444,7 +484,7 @@ mean_score <-
   )
 
 plot_drama <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.text.y = element_blank()) + ggtitle("Drama")
 
 #Horror
@@ -461,7 +501,7 @@ mean_score <-
   )
 
 plot_horror <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Horror")
 
 #Musical & Performing Arts
@@ -478,7 +518,7 @@ mean_score <-
   )
 
 plot_musical <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.text.y = element_blank()) + ggtitle("Musical & Performing Arts")
 
 #Mystery & Suspense
@@ -494,7 +534,7 @@ mean_score <-
   )
 
 plot_mistery <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Mystery & Suspense")
 
 #Other
@@ -510,7 +550,7 @@ mean_score <-
     "Source" = c("IMDB", "Audience", "Critics")
   )
 plot_other <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Other")
 
 #Science Fiction & Fantasy
@@ -526,7 +566,7 @@ mean_score <-
     "Source" = c("IMDB", "Audience", "Critics")
   )
 plot_science <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0, 88) + theme(legend.position = "none",axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("Science Fiction & Fantasy")
 
 #Combine the plots...
@@ -548,14 +588,14 @@ plot_combined_genre <-ggarrange(
   labs(title = "Comparision of scores across genres (Lollipop chart)", x = "", y="", fill="")+
   theme(plot.title = element_text(hjust = 0.5))
 
-
-plot_combined_genre
+g2_1.2 <-plot_combined_genre
+g2_1.2
 ```
 
 Taking a look at the different lollipop charts, we can see different things:
 
 * Audience gives a higher score than Critics in 10/11 genres (90.9%). The only exception is the Documentary genre.
-*  IMDB gives a higher score than Critics in 9/11 genres (81.8%). The only exception is the Documentary and Musical & Performance genres.
+* IMDB gives a higher score than Critics in 9/11 genres (81.8%). The only exception is the Documentary and Musical & Performance genres.
 * IMDB gives a higher score than Audience in 7/11 genres (63.6%).
 * Genres like Documentary and Other receive similar ratings from all IMDB, Critics and Audience, whereas in genres like Comedy or Action & Adventure the ratings differ more.
 
@@ -573,7 +613,7 @@ mean_score <-
   )
 
 plot_mpaa_all <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.x = element_blank(), axis.text.y = element_blank()) + ggtitle("All MPAA ratings")
 
 #G
@@ -589,7 +629,7 @@ mean_score <-
   )
 
 plot_g <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("G")
 
 #NC-17
@@ -605,7 +645,7 @@ mean_score <-
   )
 
 plot_nc_17 <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.x = element_blank(),axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("NC-17")
 
 #PG
@@ -622,7 +662,7 @@ mean_score <-
   )
 
 plot_pg <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.x = element_blank(),axis.text.y = element_blank()) + ggtitle("PG")
 
 #PG-13
@@ -638,7 +678,7 @@ mean_score <-
     "Source" = c("IMDB", "Audience", "Critics")
   )
 plot_pg_13 <-ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("PG-13")
 
 #R
@@ -655,7 +695,7 @@ mean_score <-
   )
 
 plot_r <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.title.y = element_blank(),axis.text.y = element_blank()) + ggtitle("R")
 
 #Unrated
@@ -672,7 +712,7 @@ mean_score <-
   )
 
 plot_unrated <- ggplot(mean_score, aes(Score, Source)) +
-  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +
+  geom_segment(aes(x = 0, y = Source, xend = Score, yend = Source,colour=Source) ) +  theme_minimal() +
   geom_point(aes(  colour=Source) ) + xlim(0,84) + theme(legend.position = "none",axis.text.y = element_blank()) + ggtitle("Unrated")
 
 
@@ -685,13 +725,14 @@ plot_combined_mpaa <-ggarrange(
   plot_pg_13,
   plot_r,
   plot_unrated,
-  ncol = 3,
-  nrow = 3,common.legend = TRUE, legend="bottom")+
+  ncol = 4,
+  nrow = 2,common.legend = TRUE, legend="bottom")+
   labs(title = "Comparision of scores across MPAA ratings (Lollipop chart)", x = "", y="", fill="")+
   theme(plot.title = element_text(hjust = 0.5))
 
 
-plot_combined_mpaa
+g2_2 <-plot_combined_mpaa
+g2_2
 ```
 
 If we now make a similar comparison for the MPAA ratings, we can see the following:
@@ -704,81 +745,120 @@ If we now make a similar comparison for the MPAA ratings, we can see the followi
 From these findings we can see that overall IMDB and the Audience tend to give more positive reviews than the Critics. However, the scores given by the three sources are not that different one from the other in the majority of the MPAA ratings (the only exceptions being the extreme Critics score for NC-17 and PG-13). Therefore, there is not enough evidence to say that there is a significant difference in the score according to the MPAA rating.
 
 
-
-
 ## 3. Comparison best picture/oscar nominated and score/oscar nominated
 ### - Are oscar-awarded films more liked?
 
 
 ```{r}
-ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
-labs(x = "Best picture nomination", y = "Audience score")
-
-ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
-  labs(x = "Best actor win", y="Audience score")
-
-ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
-  labs(x = "Best actress win", y="Audience score")
-
-ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) + geom_boxplot(alpha = .7) + geom_jitter(width = .05, alpha = .4) + guides(fill = "none") + theme_bw()+
-labs(x = "Best director win", y="Audience score")
-```
-
-```{r}
-ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) +
+# This is figure 3.1 in the Document
+g3_1_1 <- ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") +
-  theme_bw()+
+  theme_minimal() +
+  labs(x = "Best picture nomination", y = "Audience score")
+
+g3_1_2 <- ggplot(data=movies, aes(x = best_actor_win, y = audience_score, group = best_actor_win, fill = best_actor_win)) +
+  geom_boxplot(alpha = .7) +
+  geom_jitter(width = .05, alpha = .4) +
+  guides(fill = "none") +
+  theme_minimal() +
+  labs(x = "Best actor win", y=" ") 
+
+g3_1_3 <- ggplot(data=movies, aes(x = best_actress_win, y = audience_score, group = best_actress_win, fill = best_actress_win)) +
+  geom_boxplot(alpha = .7) +
+  geom_jitter(width = .05, alpha = .4) +
+  guides(fill = "none") +
+  theme_minimal()+
+  labs(x = "Best actress win", y=" ") 
+
+g3_1_4 <- ggplot(data=movies, aes(x = best_dir_win, y = audience_score, group = best_dir_win, fill = best_dir_win)) +
+  geom_boxplot(alpha = .7) +
+  geom_jitter(width = .05, alpha = .4) +
+  guides(fill = "none") +
+  theme_minimal() +
+labs(x = "Best director win", y=" ") 
+
+g3_1 <- ggarrange(
+    g3_1_1,
+    g3_1_2,
+    g3_1_3,
+    g3_1_4,
+    ncol = 4,
+    nrow = 1,
+    widths = c(200)
+  ) %>% annotate_figure(top = text_grob("Score comparison of nominated and awarded movies (box plot)", face = "bold"))
+
+g3_1
+```
+
+```{r}
+g3_2_1 <- ggplot(data=movies, aes(x = best_pic_nom, y = audience_score, group = best_pic_nom, fill = best_pic_nom)) +
+  geom_boxplot(alpha = .7) +
+  geom_jitter(width = .05, alpha = .4) +
+  guides(fill = "none") +
+  theme_minimal()+
   labs(x = "Best picture nomination", y="Audience score")
 
-ggplot(data=movies, aes(x = best_pic_nom, y = critics_score, group = best_pic_nom, fill = best_pic_nom)) +
+g3_2_2 <- ggplot(data=movies, aes(x = best_pic_nom, y = critics_score, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
-  theme_bw()+
+  theme_minimal()+
   labs(x = "Best picture nomination", y="Critics score")
 
-ggplot(data=movies, aes(x = best_pic_nom, y = imdb_rating, group = best_pic_nom, fill = best_pic_nom)) +
+g3_2_3 <- ggplot(data=movies, aes(x = best_pic_nom, y = imdb_rating, group = best_pic_nom, fill = best_pic_nom)) +
   geom_boxplot(alpha = .7) +
   geom_jitter(width = .05, alpha = .4) +
   guides(fill = "none") + 
-  theme_bw()+
+  theme_minimal()+
   labs(x = "Best picture nomination", y="IMDB rating")
+
+g3_2 <- ggarrange(
+    g3_2_1,
+    g3_2_2,
+    g3_2_3,
+    ncol = 3,
+    nrow = 1
+  ) %>% annotate_figure(top = text_grob("Score comparison of nominated and awarded movies by different critics (box plot)", face = "bold"))
+
+g3_2
 ```
 
 
 ```{r}
-ggplot(aes(x=best_pic_nom), data=movies[movies$best_pic_win=="yes",]) +
+g3_3_1 <- ggplot(aes(x=best_actor_win), data=movies[movies$best_pic_nom=="yes",]) +
+  geom_bar(aes( fill = best_dir_win), show.legend = FALSE) +
+  theme_minimal() +
+  xlab("Has the actor been awarded?") + 
+  ylab("Number of samples") +
+  scale_fill_discrete("Best actor")
+
+g3_3_2 <- ggplot(aes(x=best_actress_win), data=movies[movies$best_pic_nom=="yes",]) +
+  geom_bar(aes( fill = best_dir_win), show.legend = FALSE) +
+  theme_minimal() +
+  xlab("Has the actress been awarded?") + 
+  ylab(" ") +
+  scale_fill_discrete("Best actress")
+
+g3_3_3 <- ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) +
   geom_bar(aes( fill = best_dir_win)) +
   theme_minimal() +
-  xlab("") + 
-  ylab("Number of samples") +
+  xlab("Has the director been awarded") + 
+  ylab(" ") +
   scale_fill_discrete("Best director")
 
-movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]
-movies[movies$best_pic_nom=="no" & movies$best_pic_win=="yes",]$best_pic_nom <- "yes"
+g3_3 <- ggarrange(
+    g3_3_1,
+    g3_3_2,
+    g3_3_3,
+    ncol = 3,
+    nrow = 1,
+    widths = c(200,200,300),
+    labels = c("1", "2", "3","4")
+  ) %>% annotate_figure(top = text_grob("Relationship between awarded cast members and awarded directors", face = "bold"))
 
-ggplot(aes(x=best_actor_win), data=movies[movies$best_pic_nom=="yes",]) +
-  geom_bar(aes( fill = best_dir_win)) +
-  theme_minimal() +
-  xlab("") + 
-  ylab("Number of samples") +
-  scale_fill_discrete("Best director")
-
-ggplot(aes(x=best_actress_win), data=movies[movies$best_pic_nom=="yes",]) +
-  geom_bar(aes( fill = best_dir_win)) +
-  theme_minimal() +
-  xlab("") + 
-  ylab("Number of samples") +
-  scale_fill_discrete("Best director")
-
-ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) +
-  geom_bar(aes( fill = best_dir_win)) +
-  theme_minimal() +
-  xlab("") + 
-  ylab("Number of samples") +
-  scale_fill_discrete("Best director")
+g3_3
 ```
 
 ```{r}
@@ -891,250 +971,74 @@ ggplot(aes(x=best_dir_win), data=movies[movies$best_pic_nom=="yes",]) +
   labs(title = "Proportion of awards in the best movies (Pie chart)", x = "", y="", fill="")+
   theme(plot.title = element_text(hjust = 0.5))
 
-plot_combined_awarded
+g3_4 <- plot_combined_awarded
+g3_4
 ```
 
 Looking at the pie charts, we can see that the movies in the dataset that have received the award for best film always have a cast/crew member with another award. It must be taken into account that the actors, actresses and directors could have received their award at any point in their career, not necessarily for the awarded film in which they participate. That is, the pie charts are not meant to show that if a cast/crew member receives an award for one film, that film is more likely to be awarded itself. However, the plots can serve to study the relationship between having high quality professionals working in a movie and that movie receiving an award. 
 
 Considering this, we can see that most awarded movies in this dataset have a director that has or will receive an award. The presence of awarded directors in 6/7 movies highly surpasses the proportion of awarded movies with awarded actors and actresses. This hints that the quality of the director is more influential than that of the actors and actresses in determining if the movie is awarded for best film. This deduction makes sense, since actors are only responsible for playing their roles whereas the director's decisions involve all the elements of a film.
 
-
-```{r}
-# -Are oscar-awarded films more liked?
-#Audience score vs Best_pic_win
-plot_audience_vs_best_pic <-
-  ggplot(movies,
-         aes(x = best_pic_win, y = audience_score, fill = best_pic_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Audience", x = "Best picture award", y = "Score")+
-  ylim(0,100)
-#Critics score vs Best_pic_win
-plot_critics_vs_best_pic <-
-  ggplot(movies,
-         aes(x = best_pic_win, y = critics_score, fill = best_pic_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Critics", x = "Best picture award", y = "Score")+
-  ylim(0,100)
-#IMDB score vs Best_pic_win
-plot_imdb_vs_best_pic <-
-  ggplot(movies, aes(x = best_pic_win, y = imdb_rating*10, fill = best_pic_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Best picture award", y = "Score")+
-  ylim(0,100) 
-#Combine the plots...
-plot_combined_best_pic <-
-  ggarrange(
-    plot_audience_vs_best_pic,
-    plot_critics_vs_best_pic,
-    plot_imdb_vs_best_pic,
-    ncol = 3,
-    nrow = 1
-  )+
-  labs(title = "comparison of the score for awarded and non-awarded movies (Box plot)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
-
-plot_combined_best_pic
-
-```
-
-We can see that, for the three sources of score, awarded movies are reviewed more positively. 
-
-```{r}
-
-#Audience score vs Best_dir_win
-plot_audience_vs_best_dir <-
-  ggplot(movies,
-         aes(x = best_dir_win, y = audience_score, fill = best_dir_win)) +
-  geom_boxplot() +
-  theme(legend.position = "none") +
-  labs(title = "Audience", x = "Awarded director", y = "Score")+
-  ylim(0,100)
-#Critics score vs Best_dir_win
-plot_critics_vs_best_dir <-
-  ggplot(movies,
-         aes(x = best_dir_win, y = critics_score, fill = best_dir_win)) +
-  geom_boxplot() +
-  theme(legend.position = "none") +
-  labs(title = "Critics", x = "Awarded director", y = "Score")+
-  ylim(0,100)
-#IMDB score vs Best_dir_win
-plot_imdb_vs_best_dir <-
-  ggplot(movies, aes(x = best_dir_win, y = imdb_rating*10, fill = best_dir_win)) +
-  geom_boxplot() +
-  theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Awarded director", y = "Score")+
-  ylim(0,100)
-#Combine the plots...
-plot_combined_best_dir <-
-  ggarrange(
-    plot_audience_vs_best_dir,
-    plot_critics_vs_best_dir,
-    plot_imdb_vs_best_dir,
-    ncol = 3,
-    nrow = 1
-  )+
-  labs(title = "Score comparison for movies w/ or w/o an awarded director (Box plot)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
-
-plot_combined_best_dir
-```
-
-If we now compare the score of movies that have a director that has an award with those that do not, we can tell that the former receive a higher score.
-
-```{r}
-#Audience score vs Best_actor_win
-plot_audience_vs_best_actor <-
-  ggplot(movies,
-         aes(x = best_actor_win, y = audience_score, fill = best_actor_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Audience", x = "Awarded actor", y = "Score")+
-  ylim(0,100)
-#Critics score vs Best_dir_win
-plot_critics_vs_best_actor <-
-  ggplot(movies,
-         aes(x = best_actor_win, y = critics_score, fill = best_actor_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") + 
-  labs(title = "Critics", x = "Awarded actor", y = "Score")+
-  ylim(0,100)
-#IMDB score vs Best_dir_win
-plot_imdb_vs_best_actor <-
-  ggplot(movies,
-         aes(x = best_actor_win, y = imdb_rating*10, fill = best_actor_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Awarded actor", y = "Score")+
-  ylim(0,100)
-#Combine the plots...
-plot_combined_best_actor <-
-  ggarrange(
-    plot_audience_vs_best_actor,
-    plot_critics_vs_best_actor,
-    plot_imdb_vs_best_actor,
-    ncol = 3,
-    nrow = 1
-  )+
-  labs(title = "Score comparison for movies w/ or w/o an awarded actor (Box plot)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
-
-plot_combined_best_actor
-```
-
-However, if we compare the score of movies that star an actor that has been awarded with those that do not, we can see that there is not a big difference in the score each group receives.
-
-```{r}
-#Audience score vs Best_actress_win
-plot_audience_vs_best_actress <-
-  ggplot(movies,
-         aes(x = best_actress_win, y = audience_score, fill = best_actress_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Audience", x = "Awarded actress", y = "Score")+
-  ylim(0,100)
-
-#Critics score vs Best_dir_win
-plot_critics_vs_best_actress <-
-  ggplot(movies,
-         aes(x = best_actress_win, y = critics_score, fill = best_actress_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "Critics", x = "Awarded actress", y = "Score")+
-  ylim(0,100)
-
-#IMDB score vs Best_dir_win
-plot_imdb_vs_best_actress <-
-  ggplot(movies,
-         aes(x = best_actress_win, y = imdb_rating*10, fill = best_actress_win)) +
-  geom_boxplot() +
-  theme_minimal() +
-  theme(legend.position = "none") +
-  labs(title = "IMDB", x = "Awarded actress", y = "Score")+
-  ylim(0,100)
-
-#Combine the plots...
-plot_combined_best_actress <-
-  ggarrange(
-    plot_audience_vs_best_actress,
-    plot_critics_vs_best_actress,
-    plot_imdb_vs_best_actress,
-    ncol = 3,
-    nrow = 1
-  )+
-  labs(title = "Score comparison for movies w/ or w/o an awarded actress (Box plot)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
-
-plot_combined_best_actress
-```
-
-A similar result is obtained if we compare the scores of movies where an awarded actress played a role and those where she did not. The scores are similar for both groups of movies.
-
-
 ## 4. What are the trends over the years?
-###	- Preferred month for releases? number of films by month (over the years? does it affect the score?)
-###	- Does the genre change over the years?
-###	- Do older films tend to have higher score/number of votes? if this is true, it could be because only good old films get remembered
-
+###	- Preferred month for releases? number of films by month (over the years?)
 
 > We start to count the movies per months to see if there is a pattern in all this time in the release months.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) + 
+g4_1_1 <- ggplot(movies, aes(fill = thtr_rel_decade)) + 
   geom_bar(aes(x = thtr_rel_month, (..count..)/sum(..count..))) + 
   theme_minimal() +
   xlab("Month") + 
-  ylab("Number of Films") +
-  ggtitle("Number of Films released per month each decade ") + 
+  ylab("Percentage of Movies") +
+  ggtitle("Percentage of Movies released per month each decade ") + 
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + 
   scale_x_continuous(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")) +
   scale_y_continuous(labels=scales::percent)
+
+g4_1_1
 ```
 
 > We can see that overall there is a "pattern" of releases in the months of January, June, October and December, so let's take a better look at this data by decade.
 > We breakdown the previous graphs grouping the data by decade.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) +
-  geom_bar(aes(x = thtr_rel_month), width = 0.5) +
-  facet_wrap(thtr_rel_decade ~ .) +
+g4_1_2 <- ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = thtr_rel_month), width = 0.5, show.legend = FALSE) +
+  facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
   #facet_wrap(facets = "thtr_rel_decade", ) +
-  theme_minimal() + 
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   xlab("Month") +
-  ylab("Number of Films") +
-  ggtitle("Number of Films released per month each decade w/ breakdown") +
+  ylab("Number of Movies") +
+  ggtitle("Number of Movies released per month each decade with breakdown") +
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + 
-  scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))
+  scale_x_continuous(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")) 
+
+g4_1_2
 ```
+
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) +
-  geom_bar(aes(x = thtr_rel_month, y = (..prop..)), width = 0.5) +
-  facet_wrap(thtr_rel_decade ~ .) +
-  theme_minimal() +
-  xlab("Month") +
-  ylab("% of Films") +
-  ggtitle("% Amount of Films released per month each decade w/ breakdown ") +
+g4_1_3 <-ggplot(movies, aes(fill = thtr_rel_decade)) +
+  geom_bar(aes(x = thtr_rel_month, y = (..prop..)), width = 0.5, show.legend = FALSE) +
+  facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  xlab(" ") +
+  ylab("Percentage of Films") +
+  ggtitle("Percentage of Films released per month each decade with breakdown ") +
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
-  scale_x_discrete(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"))  +
+  scale_x_continuous(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")) +
   scale_y_continuous(labels=scales::percent)
+
+g4_1_3
 ```
 
 > Now we can see clearly that since the 70's there has been a trend of two moments in the years to release movies in theaters: in summer (June) and in the winter Holidays (December and January). However, in this last decade, we only see a spike in December.
 
 ### - Does the genre change over the years (by decade)?
 
+> We start by plotting the films separated by genre and gruped by decade in color.
+
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_decade)) +
+g4_2_1 <- ggplot(movies, aes(fill = thtr_rel_decade)) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..))) + 
   #facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
   theme_minimal() + 
@@ -1144,12 +1048,14 @@ ggplot(movies, aes(fill = thtr_rel_decade)) +
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
+
+g4_2_1
 ```
 > Now we will do a breakdown on the graph:
 
 ```{r}
 # All the plots individually:
-gen_1970 <- ggplot(movies[movies$thtr_rel_decade==1970,]) +
+g4_2_2 <- ggplot(movies[movies$thtr_rel_decade==1970,]) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'tomato') + 
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
   theme_minimal() +
@@ -1159,7 +1065,7 @@ gen_1970 <- ggplot(movies[movies$thtr_rel_decade==1970,]) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
 
-gen_1980 <- ggplot(movies[movies$thtr_rel_decade==1980,]) +
+g4_2_3 <- ggplot(movies[movies$thtr_rel_decade==1980,]) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'gold') + 
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
   theme_minimal() +
@@ -1169,7 +1075,7 @@ gen_1980 <- ggplot(movies[movies$thtr_rel_decade==1980,]) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
 
-gen_1990 <- ggplot(movies[movies$thtr_rel_decade==1990,]) +
+g4_2_4 <- ggplot(movies[movies$thtr_rel_decade==1990,]) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'limegreen') + 
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
   theme_minimal() +
@@ -1179,7 +1085,7 @@ gen_1990 <- ggplot(movies[movies$thtr_rel_decade==1990,]) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
 
-gen_2000 <- ggplot(movies[movies$thtr_rel_decade==2000,]) +
+g4_2_5 <- ggplot(movies[movies$thtr_rel_decade==2000,]) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'skyblue') + 
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
   theme_minimal() + 
@@ -1189,7 +1095,7 @@ gen_2000 <- ggplot(movies[movies$thtr_rel_decade==2000,]) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
 
-gen_2010 <- ggplot(movies[movies$thtr_rel_decade==2010,]) +
+g4_2_6 <- ggplot(movies[movies$thtr_rel_decade==2010,]) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..)), fill = 'orchid') + 
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
   theme_minimal() + 
@@ -1200,7 +1106,7 @@ gen_2010 <- ggplot(movies[movies$thtr_rel_decade==2010,]) +
   coord_flip()
 
 # Facewrap of all the plots
-ggplot(movies, aes(fill = thtr_rel_decade)) +
+g4_2_7.1 <- ggplot(movies, aes(fill = thtr_rel_decade)) +
   geom_bar(aes(x = genre, y = (..count..)/sum(..count..))) + 
   # all options & modifiers  
   facet_wrap(thtr_rel_decade ~ ., nrow = 2) +
@@ -1211,6 +1117,18 @@ ggplot(movies, aes(fill = thtr_rel_decade)) +
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) +
   scale_y_continuous(labels=scales::percent) +
   coord_flip()
+
+# g4_2_7.2 <- ggarrange(
+#     g4_2_2,
+#     g4_2_3,
+#     g4_2_4,
+#     g4_2_5,
+#     g4_2_6,
+#     ncol = 3,
+#     nrow = 2
+#   ) %>% annotate_figure(top = text_grob("Relationship between awarded cast members and awarded directors", face = "bold"))
+
+g4_2_7.1
 ```
 
 > We can see an increment over the years in the Documentary Genre, as well as in Mystery and Suspense. 
@@ -1220,25 +1138,29 @@ ggplot(movies, aes(fill = thtr_rel_decade)) +
 > Let's see what is the amount of votes over the years that we have for all the films.
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) +
-  geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'tomato') +
-  geom_jitter(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'limegreen', alpha = '0.5' ) +
+g4_2_1 <-  ggplot(movies, aes(fill = thtr_rel_date)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'tomato', show.legend = FALSE) +
+  geom_jitter(aes(x = thtr_rel_date, y = imdb_num_votes), color = 'limegreen', alpha = '0.5' , show.legend = FALSE) +
   theme_minimal() +
   xlab("Date") +
-  ylab("# of Votes") +
-  ggtitle("# of votes rating movies over the years")
+  ylab("Number of Votes") +
+  ggtitle("Number of movie rating vote over the years")
+
+g4_2_1
 ```
 
 > Okay so it seems like the number of votes does increase over the years, but does it afect the overall score?
 
 ```{r}
-ggplot(movies, aes(fill = thtr_rel_date)) +
-  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato') +
+g4_2_2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
+  geom_smooth(aes(x = thtr_rel_date, y = imdb_rating), color = 'tomato', show.legend = FALSE) +
   theme_minimal() +
   xlab("Date") +
   ylab("Rating") +
   ylim (0, 10) +
-  ggtitle("Rating of  movies over the years")
+  ggtitle("Rating of movies over the years")
+
+ggarrange(g4_2_1, g4_2_2)
 ```
 > Let's zoom to see if we can see more clearly if there is some change
 
@@ -1248,7 +1170,7 @@ ggplot(movies, aes(fill = thtr_rel_date)) +
   theme_minimal() +
   xlab("Date") +
   ylab("Rating") +
-  ylim (6, 8) +
+  #ylim (6.5, 7.5) +
   ggtitle("Zoom: rating of  movies over the years")
 ```
 
@@ -1298,7 +1220,7 @@ win_year_intersects =
 p1 = ggplot(best_dirs, aes(y=critics_score, x=thtr_rel_year, color=director))+
   geom_point()+
   geom_line(show.legend = FALSE) +
-  labs(title = "Oscar winning director movie scores", y = "Critics Score", x = "", color="Movie Released")+
+  labs(title = "Oscar winning director movie scores", y = "Critics Score", x = "", color="Movie Released")+ theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank())+
@@ -1308,13 +1230,13 @@ p1 = ggplot(best_dirs, aes(y=critics_score, x=thtr_rel_year, color=director))+
 p2 = ggplot(best_dirs, aes(y=audience_score, x=thtr_rel_year, color=director),limits = c(1,100))+
   geom_point()+
   geom_line() +
-  labs(y = "Audience Score", x = "")+
+  labs(y = "Audience Score", x = "")+ theme_minimal() +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank())+
   ylim(1,100)+
   win_year_intersects
 
-p3= ggplot(best_dirs, aes(y=imdb_rating, x=thtr_rel_year, color=director))+
+p3= ggplot(best_dirs, aes(y=imdb_rating, x=thtr_rel_year, color=director))+ theme_minimal() +
   geom_point()+
   geom_line() +
   labs(y = "IMDB Rating", x = "Film Release Year")+ 
