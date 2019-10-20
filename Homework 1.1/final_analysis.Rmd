@@ -357,7 +357,7 @@ g2_1.1 <- ggplot(score$genre_metrics_grid)+
   scale_fill_distiller( limits=c(0,1), palette = "PuOr") +
   labs(title = "Comparision of scores across genres (Heatmap)", face = "bold", x = "", y="", fill="")+
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5,face = "bold"))
 
 g2_1.1
 ```
@@ -584,8 +584,8 @@ plot_combined_genre <-ggarrange(
     plot_science,
     ncol = 3,
     nrow = 4,common.legend = TRUE, legend="bottom")+
-  labs(title = "Comparision of scores across genres (Lollipop chart)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
+  labs(title = "Comparision of scores across genres (Lollipop chart)",x = "", y="", fill="")+
+  theme(plot.title = element_text(hjust = 0.5,face = "bold"))
 
 g2_1.2 <-plot_combined_genre
 g2_1.2
@@ -725,9 +725,9 @@ plot_combined_mpaa <-ggarrange(
   plot_r,
   plot_unrated,
   ncol = 4,
-  nrow = 2,common.legend = TRUE, legend="bottom")+
+  nrow = 2,common.legend = TRUE, legend="right")+
   labs(title = "Comparision of scores across MPAA ratings (Lollipop chart)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5,face="bold"))
 
 
 g2_2 <-plot_combined_mpaa
@@ -968,7 +968,7 @@ g3_3
     widths = c(400,400,400,400)
   )+
   labs(title = "Proportion of awards in the best movies (Pie chart)", x = "", y="", fill="")+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 g3_4 <- plot_combined_awarded
 g3_4
@@ -989,7 +989,8 @@ g4_1_1 <- ggplot(movies, aes(fill = thtr_rel_decade)) +
   theme_minimal() +
   xlab("Month") + 
   ylab("Percentage of Movies") +
-  ggtitle("Percentage of Movies released per month each decade ") + 
+  ggtitle("Percentage of Movies released per month each decade ") +
+  theme(plot.title = element_text(face="bold"))+
   scale_fill_discrete(name = "Decade", labels=c("70's","80's","90's","00's","10's")) + 
   scale_x_continuous(breaks=1:12,labels=c("Jan", "Feb", "Mar", "Apr","May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")) +
   scale_y_continuous(labels=scales::percent)
@@ -1005,7 +1006,7 @@ g4_1_2 <- ggplot(movies, aes(fill = thtr_rel_decade)) +
   geom_bar(aes(x = thtr_rel_month), width = 0.5, show.legend = FALSE) +
   facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
   #facet_wrap(facets = "thtr_rel_decade", ) +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1),plot.title = element_text(face="bold")) + 
   xlab("Month") +
   ylab("Number of Movies") +
   ggtitle("Number of Movies released per month each decade with breakdown") +
@@ -1019,7 +1020,7 @@ g4_1_2
 g4_1_3 <-ggplot(movies, aes(fill = thtr_rel_decade)) +
   geom_bar(aes(x = thtr_rel_month, y = (..prop..)), width = 0.5, show.legend = FALSE) +
   facet_wrap(thtr_rel_decade ~ ., nrow = 1) +
-  theme_minimal() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme_minimal() + theme(axis.text.x = element_text(angle = 90, hjust = 1),plot.title = element_text(face="bold")) + 
   xlab(" ") +
   ylab("Percentage of Films") +
   ggtitle("Percentage of Films released per month each decade with breakdown ") +
@@ -1143,7 +1144,8 @@ g4_3_1 <-  ggplot(movies, aes(fill = thtr_rel_date)) +
   theme_minimal() +
   xlab("Date") +
   ylab("Number of Votes") +
-  ggtitle("Number of movie rating vote over the years")
+  ggtitle("Number of movie rating vote over the years")+
+  theme(plot.title = element_text(face="bold"))
 
 g4_3_1
 ```
@@ -1157,7 +1159,8 @@ g4_3_2 <- ggplot(movies, aes(fill = thtr_rel_date)) +
   xlab("Date") +
   ylab("Rating") +
   ylim (0, 10) +
-  ggtitle("Rating of movies over the years")
+  ggtitle("Rating of movies over the years")+
+  theme(plot.title=element_text(face="bold"))
 
 g4_3 <- ggarrange(g4_3_1, g4_3_2)
 g4_3
