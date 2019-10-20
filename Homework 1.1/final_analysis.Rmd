@@ -10,12 +10,11 @@ output:
 
 ```{r}
 library(ggplot2)
-library(ggpubr)
 library(plyr)
 library(lubridate)
 library(dplyr)
 library(scales)
-library(gridExtra)
+library(ggpubr)
 ```
 
 > LOAD DATA
@@ -286,7 +285,7 @@ g1_3_1 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, ord
   guides(fill = "none") +
   xlab("Genre") +
   #xlim(0,100) +
-  ylab("Score") +
+  ylab("Audience Score") +
   theme_minimal() +
   coord_flip()
 
@@ -296,7 +295,7 @@ g1_3_2 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, ord
   guides(fill = "none") +
   xlab(" ") +
   #xlim(0,100) +
-  ylab("Score") +
+  ylab("Critics Score") +
   theme_minimal() +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   coord_flip()
@@ -307,7 +306,7 @@ g1_3_3 <- ggplot(data=movies, aes(x = reorder(genre, audience_score, median, ord
   guides(fill = "none") +
   xlab(" ") +
   #xlim(0,100) +
-  ylab("Score") +
+  ylab("IMDB Rating") +
   theme_minimal() +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) +
   coord_flip()
