@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+diamonds <- read.delim("HW-diamonds.txt", header = FALSE, sep = "", dec = ".")
+```
+
+```{r}
+head(diamonds)
+```
+
+
+```{r}
+colnames(diamonds) <- c("caratage", "purity", "clarity", "certificate", "price")
+diamonds$purity <- factor(diamonds$purity, levels=c("D", "E", "F", "G", "H", "I"))
+diamonds$clarity <- factor(diamonds$clarity, levels=c("VS2", "VS1", "VVS2", "VVS1", "IF"))
+```
+
+```{r}
+summary(diamonds)
+```
+
+```{r}
+library(ggplot2)
+```
+
+### 1. Plot price vs caratage and log(price) vs caratage. Decide on which response variable is better to use
+
+```{r}
+ggplot(data=diamonds, aes(price, caratage)) + 
+        geom_point()
+ggplot(data=diamonds, aes(log(price), caratage)) + 
+        geom_point()
+```
+
+log(price) seems more linear (maybe different transformations?)
+
+
+### 2. Find a suitable way to include, besides caratage, the other categorical information available: clarity, color and certificate. Use the worst level of each categorical variable as the reference category and HRD for certification institution. Comment on the model fitted, and perform a basic analysis of the residuals (normality, constant variance, independence, you may also want to use the function outlierTest or residualPlot).
+
+
+
+### 3. Try two different remedial actions:
+
+### 3a. Create a new categorical variable to segregate the stones according to caratage: let's say less than 0.5 carats small, 0.5 to less than 1 carat (medium) and 1 carat and over (large). Make small as the reference category. Add this new variable to the existing model as well as an interaction term between this new variable and caratage.
+
+* Is this regression model satisfactory? Are the standard assumptions of linear
+regression validated? Are the numerical estimates sensible?
+
+* Interpret the interaction parameter med*carat. What can we infer on the incremental pricing of caratage in the 3 clusters?
+
+* Which is more highly valued: colour or clarity?
+
+* All other things being equal, what is the average price difference between a grade D diamond and another one graded (a) I (b) E?
+
+* All other things being equal, are there price differences amongst the stones appraised by the GIA, IGI and HRD?
+
+
+### 3b. Include the square of carat as a new explanatory variable. It avoids the subjectivity of clusters definition.
+
+
+### 4. Which of the two remedial actions do you prefer and why? Think on terms of interpretability and validity of the assumptions.
+
+
+
+
