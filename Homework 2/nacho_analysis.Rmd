@@ -76,13 +76,48 @@ summary(model.1.5)
 
 #Let's analyse this model deeper.
 # Residuals vs Fitted Plot
-residuals_vs_fitted<-plot(model.1.5, which=1, col=c("blue"))
+residuals_vs_fitted_model.1.5<-plot(model.1.5, which=1, col=c("blue"))
 #Normal Q-Q Plot
-qq_plot<-plot(model.1.5, which=2, col=c("blue")) 
+qq_plot_model.1.5<-plot(model.1.5, which=2, col=c("blue")) 
 #Scale-Location
-residuals_vs_fitted<-plot(model.1.5, which=3, col=c("blue"))
+residuals_vs_fitted_model.1.5<-plot(model.1.5, which=3, col=c("blue"))
 #Residuals vs Leverage
-residuals_vs_fitted<-plot(model.1.5, which=5, col=c("blue")) 
+residuals_vs_fitted_model.1.5<-plot(model.1.5, which=5, col=c("blue")) 
+
+```
+
+```{r}
+#Are we getting better results than with the previous models? Let's repeat the residual analysis for all and compare the results!
+library(ggpubr)
+residuals_vs_fitted_model.1.1<-plot(model.1.1, which=1, col=c("red"))
+qq_plot_model.1.1<-plot(model.1.1, which=2, col=c("red")) 
+residuals_vs_fitted_model.1.1<-plot(model.1.1, which=3, col=c("red"))
+residuals_vs_fitted_model.1.1<-plot(model.1.1, which=5, col=c("red"))
+
+residuals_vs_fitted_model.1.2<-plot(model.1.2, which=1, col=c("forestgreen"))
+qq_plot_model.1.2<-plot(model.1.2, which=2, col=c("forestgreen")) 
+residuals_vs_fitted_model.1.2<-plot(model.1.2, which=3, col=c("forestgreen"))
+residuals_vs_fitted_model.1.2<-plot(model.1.2, which=5, col=c("forestgreen"))
+
+residuals_vs_fitted_model.1.3<-plot(model.1.3, which=1, col=c("darkorchid"))
+qq_plot_model.1.3<-plot(model.1.3, which=2, col=c("darkorchid")) 
+residuals_vs_fitted_model.1.3<-plot(model.1.3, which=3, col=c("darkorchid"))
+residuals_vs_fitted_model.1.3<-plot(model.1.3, which=5, col=c("darkorchid"))
+
+residuals_vs_fitted_model.1.4<-plot(model.1.4, which=1, col=c("brown"))
+qq_plot_model.1.4<-plot(model.1.4, which=2, col=c("brown")) 
+residuals_vs_fitted_model.1.4<-plot(model.1.4, which=3, col=c("brown"))
+residuals_vs_fitted_model.1.4<-plot(model.1.4, which=5, col=c("brown"))
+
+residuals_vs_fitted_all <- ggarrange(
+  residuals_vs_fitted_model.1.1,residuals_vs_fitted_model.1.2,residuals_vs_fitted_model.1.3,
+  residuals_vs_fitted_model.1.4,residuals_vs_fitted_model.1.5,nrow = 2,ncol = 3)
+residuals_vs_fitted_all
+
+qq_plot_all <- ggarrange(
+  qq_plot_model.1.1,qq_plot_model.1.2,qq_plot_model.1.3,
+  qq_plot_model.1.4,qq_plot_model.1.5,nrow = 2,ncol = 3)
+qq_plot_all
 
 ```
 
