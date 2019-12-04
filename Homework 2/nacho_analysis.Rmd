@@ -27,7 +27,11 @@ summary(diamonds)
 ```
 
 ```{r}
+library(dplyr)
 library(ggplot2)
+library(tseries)
+library(lmtest)
+library(car)
 ```
 
 ### 1. Plot price vs caratage and log(price) vs caratage. Decide on which response variable is better to use
@@ -83,7 +87,15 @@ qq_plot_model.1.5<-plot(model.1.5, which=2, col=c("blue"))
 residuals_vs_fitted_model.1.5<-plot(model.1.5, which=3, col=c("blue"))
 #Residuals vs Leverage
 residuals_vs_fitted_model.1.5<-plot(model.1.5, which=5, col=c("blue")) 
-
+#We use Jarque-Bera to test the residuals
+jarque.bera.test(model.1.5$residuals) 
+#To test the independance, we do the Durbin-Watson test
+dwtest(model.1.5) 
+#For constant variance we'd use Breusch-Pagan
+bptest(model.1.5)
+# We'll use outlierTest and residualPlot
+outlierTest(model.1.5)
+residualPlot(model.1.5)
 ```
 
 ```{r}
@@ -127,24 +139,92 @@ qq_plot_all
 
 ### 3a. Create a new categorical variable to segregate the stones according to caratage: let's say less than 0.5 carats small, 0.5 to less than 1 carat (medium) and 1 carat and over (large). Make small as the reference category. Add this new variable to the existing model as well as an interaction term between this new variable and caratage.
 
+```{r}
+diamonds_new <- mutate(
+  diamonds,
+  caratage_category = as.factor(
+    case_when(
+      caratage < 0.5 ~ 's',
+      caratage < 1 ~ 'm',
+      caratage >= 1 ~ 'l'
+      )
+    )
+  )
+
+diamonds_new$caratage_category <- relevel(diamonds_new$caratage_category, ref = "s")
+
+```
+
 
 * Is this regression model satisfactory? Are the standard assumptions of linear
 regression validated? Are the numerical estimates sensible?
 
+The model seems to be better than before, having a Radj value of 0.996
+
 * Interpret the interaction parameter med*carat. What can we infer on the incremental pricing of caratage in the 3 clusters?
+
+An increment of one unit in any of the categorties would result in an increment depending on the category  (being category S 1, M 0.84 and L 2.18)
 
 * Which is more highly valued: colour or clarity?
 
 * All other things being equal, what is the average price difference between a grade D diamond and another one graded (a) I (b) E?
 
+DI: it's 0.294240, being D higher than I
+DE: it's 0.046429, being E higher than D
+
 * All other things being equal, are there price differences amongst the stones appraised by the GIA, IGI and HRD?
+
+There is some difference but it's really small and also the p-values are higher than 0.05.
+
+```{r}
+#We add Caratage category to the latest model
+model.1.5.1 <- lm(formula = log(price) ~ caratage*caratage_category + purity + clarity + certificate + caratage:purity + caratage:clarity + caratage:certificate , data = diamonds_new)
+summary(model.1.5.1)
+
+#Let's analyse this model deeper.
+# Residuals vs Fitted Plot
+residuals_vs_fitted_model.1.5.1<-plot(model.1.5.1, which=1, col=c("blue"))
+#Normal Q-Q Plot
+qq_plot_model.1.5.1<-plot(model.1.5.1, which=2, col=c("blue")) 
+#Scale-Location
+residuals_vs_fitted_model.1.5.1<-plot(model.1.5.1, which=3, col=c("blue"))
+#Residuals vs Leverage
+residuals_vs_fitted_model.1.5.1<-plot(model.1.5.1, which=5, col=c("blue")) 
+#We use Jarque-Bera to test the residuals
+jarque.bera.test(model.1.5.1$residuals) 
+#To test the independance, we do the Durbin-Watson test
+dwtest(model.1.5.1) 
+#For constant variance we'd use Breusch-Pagan
+bptest(model.1.5.1)
+# We'll use outlierTest and residualPlot
+outlierTest(model.1.5.1)
+residualPlot(model.1.5.1)
+
+# To test if clarity or purity is better than the other
+
+
+```
 
 
 ### 3b. Include the square of carat as a new explanatory variable. It avoids the subjectivity of clusters definition.
 
+```{r}
 
-### 4. Which of the two remedial actions do you prefer and why? Think on terms of interpretability and validity of the assumptions.
+diamonds_c2 <- mutate(
+  diamonds,
+  caratage2 = caratage^2
+  )
+model.1.5.2 <- lm(formula = log(price) ~ caratage + caratage2 + purity + clarity + certificate + caratage:purity + caratage:clarity + caratage:certificate , data = diamonds_c2)
+summary(model.1.5.2)
+
+```
 
 
+### 4. Which of the two remedial actions do you prefer and why? Think on terms of interpretability and validity of the assumptions of the avoiding the subjectivity of cluster definition.
+
+In the first one we are using more variables and are mure subjective (we get the small, medium and large values from the text but we don't se much logic between the numbers/ranges) but for the second one using the caratage squered seems a bit farfetched to understand why  
+
+```{r}
+```
 
 
