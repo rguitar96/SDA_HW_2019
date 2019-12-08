@@ -179,6 +179,7 @@ An increment of one unit in any of the categorties would result in an increment 
 
 * Which is more highly valued: colour or clarity?
 
+
 * All other things being equal, what is the average price difference between a grade D diamond and another one graded (a) I (b) E?
 
 DI: it's 0.294240, being D higher than I
@@ -213,8 +214,7 @@ outlierTest(model.1.5.1)
 residualPlot(model.1.5.1)
 
 # To test if clarity or purity is better than the other
-
-
+anova(model.1.5.1)
 ```
 
 ```{r}
