@@ -1,0 +1,45 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(xlsx)
+library(ggplot2)
+```
+
+
+```{r}
+housing <- read.xlsx("data_g5.xlsx", sheetName = "6.19 r")
+```
+
+```{r}
+head(housing)
+```
+
+1. Plot the series and briefly comment on the characteristics you observe (stationarity, trend,
+seasonality, ...).
+
+```{r}
+ggplot(data = housing, aes(x = Fecha, y = X..Viviendas))+
+  geom_line(color = "#00AFBB", size = 1.5) +
+  labs(x = "Time", y = "% Houses")
+
+```
+
+
+2. Obtain a plot of the decomposition of the series, using stl(). Use an additive decomposition
+or a multiplicative one, depending on your data. Use the function forecast() to forecast
+future values. Multiplicative decomposition is useful when the logarithmic transformation
+makes a difference in the appearance of your series and shows more constant variance. Does
+the remainder look like a white noise to you? White noise is just a group of independent,
+identically distributed variables, with zero mean and constant variance. Answer to this
+point just visually or plot the ACF and PACF of the remainder part.
+
+
+```{r}
+housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+plot(stl.housing)
+```
+
