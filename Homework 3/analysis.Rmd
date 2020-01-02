@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(xlsx)
 library(ggplot2)
+library(forecast)
 ```
 
 
@@ -25,8 +26,42 @@ ggplot(data = housing, aes(x = Fecha, y = X..Viviendas))+
   geom_line(color = "#00AFBB", size = 1.5) +
   labs(x = "Time", y = "% Houses")
 
+#Logarithmic transformation
+ggplot(data = housing, aes(x = Fecha, y = log(X..Viviendas)))+
+  geom_line(color = "#00AFBB", size = 1.5) +
+  labs(x = "Time", y = "Logarithmic % Houses")
+
+#Square root transformation
+ggplot(data = housing, aes(x = Fecha, y = sqrt(X..Viviendas)))+
+  geom_line(color = "#00AFBB", size = 1.5) +
+  labs(x = "Time", y = "Square Root of % Houses")
+
+housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+
+
+#First order difference
+plot(diff(housing_ts))
+#Seasonal difference
+plot(diff(housing_ts, 12))
+#Second order difference
+plot(diff(diff(housing_ts, 12)))
+
 ```
 
+It is a non-stationaty Time Series, as there is a trend over time and we can see different patterns. There is a changing trend that had two major positive slopes between 1991 and 1993, but then the trend became negative until much later around the year 2002. After that, the trend looks to be going slowly up. This trend changed direction two times in this period of time.
+
+It seems that there is no seasonality, as there is not a regularly repeating pattern related to quarters of the year, and the variability is decreasing, reducing the amount of change over time.
+
+There is no evidence of any cyclic behaviour in the data.
+
+```{r}
+sd(housing_ts)
+sd(diff(housing_ts))
+sd(diff(housing_ts, 12))
+sd(diff(diff(housing_ts, 12)))
+```
+
+The standard deviation stops decreasing with one first order differentiation.
 
 2. Obtain a plot of the decomposition of the series, using stl(). Use an additive decomposition
 or a multiplicative one, depending on your data. Use the function forecast() to forecast
@@ -38,8 +73,20 @@ point just visually or plot the ACF and PACF of the remainder part.
 
 
 ```{r}
-housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+# Should be an additive time series, as there is no rough changes
 stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
 plot(stl.housing)
+```
+
+The bar on the seasonal panel is huge compared with the one on the data panel, indicating a lack of seasonal influence. On the other hand, the bar on the trend panel is roughly the same size as the first one, indicating that the variation attributed to the trend is much higher than the seasonal component. The residuals represent much more stochastic fluctuations than the seasonal panel, indicating that it is the second most important component.
+
+```{r}
+acf(housing_ts)
+pacf(housing_ts)
+```
+
+
+```{r}
+forecast(housing_ts)
 ```
 
