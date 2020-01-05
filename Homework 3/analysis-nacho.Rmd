@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(xlsx)
+library(ggplot2)
+library(forecast)
+```
+
+
+```{r}
+housing <- read.xlsx("data_g5.xlsx", sheetName = "6.19 r")
+head(housing)
+```
+
+
+## Question 1
+### Plot the series and briefly comment on the characteristics you observe (stationarity, trend, seasonality...).
+
+```{r}
+housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+autoplot(housing_ts)
+#Seasonality in depth
+ggmonthplot(housing_ts)
+ggseasonplot(housing_ts)
+```
+
+* Trend: There is a trend over time and we can see different patterns. There is a changing trend that has a positive slope between 1991 and 1993, a negative slope between 1993 and 2003, and a positive slope from 2003 and onwards. 
+
+* Seasonality: It seems that there is no seasonality, as there is not a regularly repeating pattern related, and the variability is decreasing, reducing the amount of change over time.
+
+* Cyclical components: There is no evidence of any cyclic behaviour in the data.
+
+Taking these observations into account, we can state that we are working with a non-stationary Time Series.
+
+
+## Question 2.
+### Obtain a plot of the decomposition of the series, using stl(). Use an additive decomposition
+or a multiplicative one, depending on your data.
+
+```{r}
+library(gridExtra)
+
+#Additive decompostition
+stl1.housing <- stl(housing_ts, s.window="periodic", robust=TRUE)
+stl2.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+stl3.housing <- stl(housing_ts, t.window=15, s.window="periodic", robust=TRUE)
+
+#compare trends
+trend1 = autoplot(stl1.housing$time.series[,2])
+trend2=autoplot(stl2.housing$time.series[,2]) #more wiggly trend
+trend3=autoplot(stl3.housing$time.series[,2])
+grid.arrange(trend1, trend2, trend3, ncol= 1)
+
+#compare seasonal components tunning parameter s.window
+stl1.housing <- stl(housing_ts, t.window=15, s.window="periodic", robust=TRUE)
+stl2.housing <- stl(housing_ts, t.window=15, s.window=13, robust=TRUE)
+stl3.housing <- stl(housing_ts, t.window=15, s.window=3, robust=TRUE)
+season1=autoplot(stl1.housing$time.series[,1])
+season2=autoplot(stl2.housing$time.series[,1])
+season3=autoplot(stl3.housing$time.series[,1]) 
+grid.arrange(season1, season2, season3, ncol= 1)
+
+stl.housing <- stl(housing_ts, t.window=15, s.window=13, robust=TRUE)
+str(stl.housing) # $time.series[,1:3], seasonal, trend, remainder
+#stl.housing #seasonal, trend, remainder
+plot(stl.housing)
+# seasonal factors
+stl.housing$time.series[,1]
+min(stl.housing$time.series[,1])
+max(stl.housing$time.series[,1])
+
+#plotting the original series and the seasonal adjusted one, to see the trend
+pl1=autoplot(housing_ts)
+pl2=autoplot(seasadj(stl.housing))
+grid.arrange(pl1, pl2, ncol= 1)
+```
+
+We can see a few things with this plot. The trend component captures well the shape of the series. Seasonal factors are very small ([-0.09,0.08]). The seasonal adjusted series is just like the original one.
+
+### Use the function forecast() to forecast future values. 
+```{r}
+#Training and testing data split
+housing.train=window(housing_ts, end=2004-0.001) #~0.8
+housing.test=window(housing_ts,start=2004) #~0.2
+#The slope at the transition between testing and training datasets influences how easy is to predict the future values. The year at which we divide the time series determines which method has the lowest RMSE.
+
+#forecasting with stl(): different methods: naive, ets, arima, rwdrift
+stl.housing <- stl(housing.train, t.window=15, s.window=13, robust=TRUE)
+
+#naive
+fcst=forecast(stl.housing, method="naive", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean - housing.test)^2, na.rm=TRUE))
+
+#ets
+fcst=forecast(stl.housing, method="ets", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE))
+
+#arima
+fcst=forecast(stl.housing, method="arima", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE))
+
+#rwdrift
+fcst=forecast(stl.housing, method="rwdrift", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE)) #Lowest RMSE
+```
+
+
+### Does the remainder look like a white noise to you? Answer to this point just visually or plot the ACF and PACF of the remainder part.
+
+```{r}
+stl.housing <- stl(housing_ts, t.window=15, s.window=13, robust=TRUE)
+autoplot(stl.housing)
+housing.remainder<-stl.housing$time.series[,3]
+autoplot(housing.remainder) 
+
+gn = rnorm(length(housing.remainder),mean=mean(housing.remainder[-1]),sd=sd(housing.remainder[-1]))
+gn=ts(gn)
+plot1=autoplot(housing.remainder)
+plot2=autoplot(gn)
+grid.arrange(plot1, plot2, ncol= 1)
+
+#ACF and PACF
+library(astsa)
+acf2(housing.remainder)
+plot3=ggAcf(zoo::coredata(housing.remainder))
+plot4=ggAcf(gn) #comparing with gaussian noise
+grid.arrange(plot3,plot4,ncol=1)
+```
+
+The remainder does not look at all like gaussian noise.
+
+
+
