@@ -244,44 +244,78 @@ kpss.test(housing_ts)
   
 ```{r}
 
-current_ts = d.ts
+  # current_ts = d.ts
+  # #We start testing with the D = 0 (or to the previous defined values) and we change in the models the values of p and q
+  #   # q = 0
+  # models = c(
+  # c(AICc(arima(current_ts, order = c(1,0,0)))
+  # ,AICc(arima(current_ts, order = c(2,0,0)))
+  # ,AICc(arima(current_ts, order = c(3,0,0)))
+  # ,AICc(arima(current_ts, order = c(4,0,0))))
+  # ,
+  # c(  # q = 1
+  # AICc(arima(current_ts, order = c(1,0,1)))
+  # ,AICc(arima(current_ts, order = c(2,0,1)))
+  # ,AICc(arima(current_ts, order = c(3,0,1)))
+  # ,AICc(arima(current_ts, order = c(4,0,1))))
+  # ,
+  # c(  # q = 2
+  # AICc(arima(current_ts, order = c(1,0,2)))
+  # ,AICc(arima(current_ts, order = c(2,0,2)))
+  # ,AICc(arima(current_ts, order = c(3,0,2)))
+  # ,AICc(arima(current_ts, order = c(4,0,2))))
+  # ,
+  # c(  # q = 3
+  # AICc(arima(current_ts, order = c(1,0,3)))
+  # ,AICc(arima(current_ts, order = c(2,0,3)))
+  # ,AICc(arima(current_ts, order = c(3,0,3)))
+  # ,AICc(arima(current_ts, order = c(4,0,3))))
+  # ,
+  # c(  # q = 4
+  # AICc(arima(current_ts, order = c(1,0,4)))
+  # ,AICc(arima(current_ts, order = c(2,0,4)))
+  # ,AICc(arima(current_ts, order = c(3,0,4)))
+  # ,AICc(arima(current_ts, order = c(4,0,4))))
+  # )
 
 #We start testing with the D = 0 (or to the previous defined values) and we change in the models the values of p and q
   # q = 0
 models = c(
-c(AICc(arima(current_ts, order = c(1,0,0)))
-,AICc(arima(current_ts, order = c(2,0,0)))
-,AICc(arima(current_ts, order = c(3,0,0)))
-,AICc(arima(current_ts, order = c(4,0,0))))
+c(AICc(arima(housing_ts, order = c(1,1,0)))
+,AICc(arima(housing_ts, order = c(2,1,0)))
+,AICc(arima(housing_ts, order = c(3,1,0)))
+,AICc(arima(housing_ts, order = c(4,1,0))))
 ,
 c(  # q = 1
-AICc(arima(current_ts, order = c(1,0,1)))
-,AICc(arima(current_ts, order = c(2,0,1)))
-,AICc(arima(current_ts, order = c(3,0,1)))
-,AICc(arima(current_ts, order = c(4,0,1))))
+AICc(arima(housing_ts, order = c(1,1,1)))
+,AICc(arima(housing_ts, order = c(2,1,1)))
+,AICc(arima(housing_ts, order = c(3,1,1)))
+,AICc(arima(housing_ts, order = c(4,1,1))))
 ,
 c(  # q = 2
-AICc(arima(current_ts, order = c(1,0,2)))
-,AICc(arima(current_ts, order = c(2,0,2)))
-,AICc(arima(current_ts, order = c(3,0,2)))
-,AICc(arima(current_ts, order = c(4,0,2))))
+AICc(arima(housing_ts, order = c(1,1,2)))
+,AICc(arima(housing_ts, order = c(2,1,2)))
+,AICc(arima(housing_ts, order = c(3,1,2)))
+,AICc(arima(housing_ts, order = c(4,1,2))))
 ,
 c(  # q = 3
-AICc(arima(current_ts, order = c(1,0,3)))
-,AICc(arima(current_ts, order = c(2,0,3)))
-,AICc(arima(current_ts, order = c(3,0,3)))
-,AICc(arima(current_ts, order = c(4,0,3))))
+AICc(arima(housing_ts, order = c(1,1,3)))
+,AICc(arima(housing_ts, order = c(2,1,3)))
+,AICc(arima(housing_ts, order = c(3,1,3)))
+,AICc(arima(housing_ts, order = c(4,1,3))))
 ,
 c(  # q = 4
-AICc(arima(current_ts, order = c(1,0,4)))
-,AICc(arima(current_ts, order = c(2,0,4)))
-,AICc(arima(current_ts, order = c(3,0,4)))
-,AICc(arima(current_ts, order = c(4,0,4))))
+AICc(arima(housing_ts, order = c(1,1,4)))
+,AICc(arima(housing_ts, order = c(2,1,4)))
+,AICc(arima(housing_ts, order = c(3,1,4)))
+,AICc(arima(housing_ts, order = c(4,1,4), optim.control =  list(maxit = 1000))))
 )
 
-#Lowest value appears to be p=3 d=0 q=3 with a value of: (373.2994)
-min(models)
+models
 
+# #Lowest value appears to be p=3 d=0 q=3 with a value of: (373.2994)
+ min(models)
+ 
 ```
   
 However, because we know by observing the residuals that there is a spike in the 12th obvservation, we are also going to test using a p or q values equal to 12 to see if we get lower values than the 3 0 3 model.
@@ -301,6 +335,11 @@ tsdisplay(residuals(curr_test2), lag.max=15, main='12 0 0 Model Reiduals')
 curr_test3 <- arima(current_ts, order = c(12,0,12))
 AICc(arima(current_ts, order = c(12,0,12)))  #We get a lower value
 tsdisplay(residuals(curr_test3), lag.max=15, main='12 0 12 Model Reiduals')
+
+
+curr_test4 <- arima(housing_ts, order = c(12,1,12))
+AICc(curr_test4)  #We get a lower value
+tsdisplay(residuals(curr_test4), lag.max=15, main='12 1 12 Model Reiduals')
 ```
 
 
@@ -309,10 +348,22 @@ tsdisplay(residuals(curr_test3), lag.max=15, main='12 0 12 Model Reiduals')
 ```{r}
 #To make diagnostics, we should analyse the ACF and PACF values
 final.model = arima(current_ts, order = c(0,0,12))
-final.model
+# summary(final.model)
+# 
+# acf(current_ts)
+# pacf(current_ts)
+# 
 
-acf(current_ts)
-pacf(current_ts)
+#To make diagnostics, we should analyse the ACF and PACF values
+final.model2 = Arima(housing_ts, order = c(0,1,12))
+summary(final.model2)
+
+plot(final.model2$residuals)
+
+tsdiag(final.model2)
+
+#Not a greate result
+jarque.bera.test(final.model2$residuals)
 
 ```
   
@@ -321,8 +372,12 @@ pacf(current_ts)
   
 ```{r}
 #arima
-fcst=forecast(final.model, method="arima", h=24)
-plot(fcst)
+
+fcst.fm=forecast(final.model, h=24)
+plot(fcst.fm)
+
+fcst.fm2=forecast(final.model2, h=24)
+plot(fcst.fm2)
 ```
   
 
@@ -331,8 +386,20 @@ plot(fcst)
 ```{r}
 #To be honest i cant find that function. We may have to load it.
 
-# We also have to do the data separation to leave the last year as a Test portion. (last 12 obs.)
+#Training and testing data split
+arima.train=window(housing_ts, end=2007-0.001)
+arima.test=window(housing_ts,start=2007) 
 
+final.model2.predict = arima(arima.train, order = c(12,1,12))
+
+arima.predict = predict(final.model2.predict, 12)
+
+arima.predict
+
+arima.test
+
+# # Validation: test error  RMSE
+sqrt(mean((arima.predict$pred - arima.test)^2, na.rm=TRUE))
 ```
   
 
@@ -340,16 +407,20 @@ plot(fcst)
   
 ```{r}
 auto.model <- auto.arima(d.ts,
-                         seasonal=T,
+                         seasonal= TRUE,
                          max.order = 24,
                          max.p = 14,
                          max.q = 14)
 
 
-auto.model
+summary(auto.model)
 tsdisplay(residuals(auto.model), lag.max=15, main='Automatic Model Reiduals')
 
 tsdisplay(residuals(final.model), lag.max=15, main='Final Model Reiduals')
+
+tsdisplay(residuals(final.model2), lag.max=15, main='Final Model 2 Reiduals')
+
+jarque.bera.test(final.model2$residuals)
 
 ```
   
