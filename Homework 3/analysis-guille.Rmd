@@ -1,0 +1,356 @@
+---
+title: "Homework 3"
+output:
+  html_document:
+    df_print: paged
+---
+
+<!-- Note: this file is a copy of "analysis-nacho" -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=TRUE}
+library(xlsx)
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(MuMIn)
+library(gridExtra)
+library(astsa)
+library(zoo)
+library(car)
+```
+
+
+```{r}
+housing <- read.xlsx("data_g5.xlsx", sheetName = "6.19 r")
+head(housing)
+```
+
+
+## Question 1
+### Plot the series and briefly comment on the characteristics you observe (stationarity, trend, seasonality...).
+
+```{r}
+housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+autoplot(housing_ts)
+#Seasonality in depth
+ggmonthplot(housing_ts) #Monthly
+ggseasonplot(housing_ts) #Yearly
+```
+
+* Trend: There is a trend over time and we can see different patterns. There is a changing trend that has a positive slope between 1991 and 1993, a negative slope between 1993 and 2003, and a positive slope from 2003 and onwards. 
+
+* Seasonality: It seems that there is no seasonality, as there is not a regularly repeating pattern related.
+
+* Cyclical components: There is no evidence of any cyclic behaviour in the data.
+
+Taking these observations into account, we can state that we are working with a non-stationary time Series. Even if the time series shows no seasonal or cyclical components, the presence of trends makes it non-stationary.
+
+
+## Question 2.
+### Obtain a plot of the decomposition of the series, using stl(). Use an additive decomposition
+or a multiplicative one, depending on your data.
+
+
+```{r}
+#Additive decomposition
+stl1.housing <- stl(housing_ts,  s.window="periodic", robust=TRUE)
+stl2.housing <- stl(housing_ts,  s.window=5, robust=TRUE)
+stl3.housing <- stl(housing_ts,  s.window=15, robust=TRUE)
+
+#Compare seasonal components tunning parameter s.window
+season1=autoplot(stl1.housing$time.series[,1])
+season2=autoplot(stl2.housing$time.series[,1])
+season3=autoplot(stl3.housing$time.series[,1]) 
+grid.arrange(season1, season2, season3, ncol= 1)
+```
+
+We have used an additive decomposition, since there are no changes in seasonal components. We can see that using the first seasonal window (s.window = periodic), the seasonal components are small, centered around zero and more or less constant. Since the seasonality plots obtained before showed no influence of seasonal components, we will choose this seasonal window.
+
+```{r}
+stl1.housing <- stl(housing_ts, s.window="periodic", robust=TRUE)
+stl2.housing <- stl(housing_ts, t.window = 5, s.window="periodic", robust=TRUE)
+stl3.housing <- stl(housing_ts, t.window = 15, s.window="periodic", robust=TRUE)
+
+#Compare trends
+trend1 = autoplot(stl1.housing$time.series[,2])
+trend2=autoplot(stl2.housing$time.series[,2]) #more wiggly trend
+trend3=autoplot(stl3.housing$time.series[,2])
+grid.arrange(trend1, trend2, trend3, ncol= 1)
+```
+
+Keeping a periodic window for the seasonal components (assuming they are equal across the years), we can see that using the second trend window (t.window = 5), produces the trend that better captures the structure of the data. Thus, we will choose it.
+
+
+```{r}
+#Final decomposition
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+#stl.housing #seasonal, trend, remainder
+plot(stl.housing)
+
+# seasonal factors
+seasonal.factors<-stl.housing$time.series[,1]
+min(seasonal.factors)
+max(seasonal.factors)
+
+# remainder
+housing.remainder<-stl.housing$time.series[,3]
+min(housing.remainder)
+max(housing.remainder)
+mean(housing.remainder)
+
+#plotting the original series and the seasonal adjusted one, to see the trend
+pl1=autoplot(housing_ts)
+pl2=autoplot(seasadj(stl.housing))
+grid.arrange(pl1, pl2, ncol= 1)
+```
+
+
+Watching the decomposition plot resulting from the selected windows, we can see that the seasonal components have low constant values that are centered around zero ([-0.192,0.124]). The structure of the data is captured well by the trend component and the seasonal adjusted series is just like the original one. The remainder values are somewhat big ([-1.34,1.84]), but have zero mean (-0.0153).
+
+
+### Use the function forecast() to forecast future values. 
+```{r}
+#Training and testing data split
+housing.train=window(housing_ts, end=2004-0.001) #~0.8
+housing.test=window(housing_ts,start=2004) #~0.2
+#The slope at the transition between testing and training datasets influences how easy is to predict the future values. The year at which we divide the time series determines which method has the lowest RMSE.
+
+#forecasting with stl(): different methods: naive, ets, arima, rwdrift
+stl.housing <- stl(housing.train, t.window=5, s.window="periodic", robust=TRUE)
+
+#naive
+fcst=forecast(stl.housing, method="naive", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean - housing.test)^2, na.rm=TRUE))
+
+#ets
+fcst=forecast(stl.housing, method="ets", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE))
+
+#arima
+fcst=forecast(stl.housing, method="arima", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE))
+
+#rwdrift
+fcst=forecast(stl.housing, method="rwdrift", h=24)
+plot(fcst)
+#fcst$mean
+# Validation: test error  RMSE
+sqrt(mean((fcst$mean-housing.test)^2, na.rm=TRUE)) #Lowest RMSE
+```
+Using stl() to forecast, we can see that using the random walk with drift method to predict future values results in the lowest RMSE.
+
+### Does the remainder look like a white noise to you? Answer to this point just visually or plot the ACF and PACF of the remainder part.
+
+```{r}
+#Remainder
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+autoplot(stl.housing)
+housing.remainder<-stl.housing$time.series[,3]
+autoplot(housing.remainder) 
+
+#ACF and PACF
+acf2(housing.remainder)
+
+#Gaussian noise
+gn = rnorm(length(housing.remainder),mean=mean(housing.remainder[-1]),sd=sd(housing.remainder[-1]))
+gn=ts(gn)
+
+#Comparison
+plot1=autoplot(housing.remainder)
+plot2=autoplot(gn)
+grid.arrange(plot1, plot2, ncol= 1)
+
+plot3=ggAcf(zoo::coredata(housing.remainder))
+plot4=ggAcf(gn) #comparing with gaussian noise
+grid.arrange(plot3,plot4,ncol=1)
+```
+
+The remainder does not look like gaussian noise, since it does not have a constant variance. 
+
+<!-- Note: this file is a continuation of "analysis-nacho" -->
+
+## Question 3
+### Fit an ARIMA model to your time series. Some steps to follow
+
+  a) *Decide on whether to work with your original variable or with the log transform one (use plot and tsdisplay of both variables, the transformed one and the original one). Remember that logarithmic transformation is useful to stabilize the variance. If both plots look almost the same to you, just use the original data.*
+  
+```{r}
+log.housing_ts <- log(housing_ts)
+tsdisplay(log.housing_ts); 
+tsdisplay(housing_ts)
+```
+  
+There is barely any difference, so we will use the original data (housing_ts)
+
+  b) *Are you going to consider a seasonal component? If the answer is yes, identify s. You can use the periodogram (function tsdisplay with parameter “plot.type=spectrum”), ACF (with significant correlations on lag s and its multiples), seasonplot() and monthplot(). For montlhy data, s = 12; for quarterly data s = 4. Declare this frequency when you define your time-series in R, regardless of including or not a seasonal term in your model. This will permit you to use the functions seasonplot (package forecast) or monthplot (built-in function).*
+  
+  As previously stated, we can see that there is no seasonality, and this can be seen pretty easily by using the function `ggseasonplot` with the chosen data. We can also plot the Seasonal Decomposition to see that the values of the "season" are really low, between -0.2 and 0.1:
+  
+```{r}
+#We already created the Ts with s = 12:
+#housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
+
+#We re-print the season plot 
+ggseasonplot(housing_ts)
+
+#Final decomposition
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+#stl.housing #seasonal, trend, remainder
+plot(stl.housing)
+```
+  
+
+  c) *Decide on the values of d and D to make your series stationary. D values are not usually greater than 1. You can use the standard deviation procedure and stationary tests (adf.test, kpss.test). Also, functions like ndiffs and nsdiffs may be useful. Don’t be surprised if that group of tools give you contradictory results. Just, make decision to keep going. Plots of the ACF and PACF also help. If you can draw a pattern out of the ACF and PACF function, then stop differencing and start modelling. If that pattern doesn’t work, then consider rethinking the part where you took differences.*
+  
+  We start testing to get the best "D" for our ARIMA model.
+  
+```{r}
+#Final decomposition
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
+
+#We begin by testing the different D values in a stl to see the results:
+d.ts = ts(diff(housing_ts), frequency = 12)
+d.test = stl(d.ts, t.window=5, s.window = "periodic", robust=TRUE)
+
+plot(stl.housing)
+plot(d.test)
+
+#A formal ADF test does not reject the null hypothesis
+adf.test(housing_ts, alternative = c("stationary"))
+  #the lower it gets is p-value = 0.4142 w/ lag = 5
+
+#However with the differenced time series we can reject the hypothesis of non-stationarity
+adf.test(d.ts, alternative = c("stationary"))
+
+#We can reject the null hypothesis that it's stationary (p=0.01) at 5% level
+kpss.test(housing_ts)
+```
+  So it may be a good idea to consider differencing the data, given that the default data structure chosen may be shomewhat stationary. So here on out we will be uing the `dts` time series  
+
+  d) *Identify values for p and q for the regular part and P and Q for the seasonal part. Start with low values and then increase them, one at a time. Fit different models and compare them using AICc and checking the residuals. Check also the correlation between the coefficients of the model.*
+  
+```{r}
+
+current_ts = d.ts
+
+#We start testing with the D = 0 (or to the previous defined values) and we change in the models the values of p and q
+  # q = 0
+models = c(
+c(AICc(arima(current_ts, order = c(1,0,0)))
+,AICc(arima(current_ts, order = c(2,0,0)))
+,AICc(arima(current_ts, order = c(3,0,0)))
+,AICc(arima(current_ts, order = c(4,0,0))))
+,
+c(  # q = 1
+AICc(arima(current_ts, order = c(1,0,1)))
+,AICc(arima(current_ts, order = c(2,0,1)))
+,AICc(arima(current_ts, order = c(3,0,1)))
+,AICc(arima(current_ts, order = c(4,0,1))))
+,
+c(  # q = 2
+AICc(arima(current_ts, order = c(1,0,2)))
+,AICc(arima(current_ts, order = c(2,0,2)))
+,AICc(arima(current_ts, order = c(3,0,2)))
+,AICc(arima(current_ts, order = c(4,0,2))))
+,
+c(  # q = 3
+AICc(arima(current_ts, order = c(1,0,3)))
+,AICc(arima(current_ts, order = c(2,0,3)))
+,AICc(arima(current_ts, order = c(3,0,3)))
+,AICc(arima(current_ts, order = c(4,0,3))))
+,
+c(  # q = 4
+AICc(arima(current_ts, order = c(1,0,4)))
+,AICc(arima(current_ts, order = c(2,0,4)))
+,AICc(arima(current_ts, order = c(3,0,4)))
+,AICc(arima(current_ts, order = c(4,0,4))))
+)
+
+#Lowest value appears to be p=3 d=0 q=3 with a value of: (373.2994)
+min(models)
+
+```
+  
+However, because we know by observing the residuals that there is a spike in the 12th obvservation, we are also going to test using a p or q values equal to 12 to see if we get lower values than the 3 0 3 model.
+
+```{r}
+#We visualize the spike in the residuals
+tsdisplay(residuals(arima(current_ts, order = c(3,0,3))), lag.max=15, main='Model Reiduals')
+
+curr_test <- arima(current_ts, order = c(0,0,12))
+AICc(arima(current_ts, order = c(0,0,12)))  #We get a much lower value
+tsdisplay(residuals(curr_test), lag.max=15, main='0 0 12 Model Reiduals')
+
+curr_test2 <- arima(current_ts, order = c(12,0,0))
+AICc(arima(current_ts, order = c(12,0,0)))  #We get a lower value
+tsdisplay(residuals(curr_test2), lag.max=15, main='12 0 0 Model Reiduals')
+
+curr_test3 <- arima(current_ts, order = c(12,0,12))
+AICc(arima(current_ts, order = c(12,0,12)))  #We get a lower value
+tsdisplay(residuals(curr_test3), lag.max=15, main='12 0 12 Model Reiduals')
+```
+
+
+  e) *Make diagnostic of the residuals for the final model chosen (autocorrelations, zero mean, normality). Use plots and tests.*
+  
+```{r}
+#To make diagnostics, we should analyse the ACF and PACF values
+final.model = arima(current_ts, order = c(0,0,12))
+final.model
+
+acf(current_ts)
+pacf(current_ts)
+
+```
+  
+
+  f) *Once you have found a suitable model, repeating the fitting model process several times if necessary, use it to make forecasts. Plot them.*
+  
+```{r}
+#arima
+fcst=forecast(final.model, method="arima", h=24)
+plot(fcst)
+```
+  
+
+  g) *Use the function getrmse to compute the test set RMSE of some of the models you have already fiited. Which is the one minimizing it? Use the last year of observations (12 observations for monthly data, 4 observations for quarterly data) as the test set.*
+  
+```{r}
+#To be honest i cant find that function. We may have to load it.
+
+# We also have to do the data separation to leave the last year as a Test portion. (last 12 obs.)
+
+```
+  
+
+  h) *You can also use the auto.arima() function with some of its parameters fixed, to see if it suggests a better model that the one you have found. Don’t trust blindly its output. Automatic found models aren’t based on an analysis of residuals but in comparing some other measures like AIC. Depending on how complex the data set is, they may find models with high values for p, q, P or Q (greater than 2).*
+  
+```{r}
+auto.model <- auto.arima(d.ts,
+                         seasonal=T,
+                         max.order = 24,
+                         max.p = 14,
+                         max.q = 14)
+
+
+auto.model
+tsdisplay(residuals(auto.model), lag.max=15, main='Automatic Model Reiduals')
+
+tsdisplay(residuals(final.model), lag.max=15, main='Final Model Reiduals')
+
+```
+  
+  
