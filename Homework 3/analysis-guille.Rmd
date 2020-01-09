@@ -216,6 +216,7 @@ plot(stl.housing)
   c) *Decide on the values of d and D to make your series stationary. D values are not usually greater than 1. You can use the standard deviation procedure and stationary tests (adf.test, kpss.test). Also, functions like ndiffs and nsdiffs may be useful. Don’t be surprised if that group of tools give you contradictory results. Just, make decision to keep going. Plots of the ACF and PACF also help. If you can draw a pattern out of the ACF and PACF function, then stop differencing and start modelling. If that pattern doesn’t work, then consider rethinking the part where you took differences.*
   
   We start testing to get the best "D" for our ARIMA model.
+  (Nacho: I think we are testing "d")
   
 ```{r}
 #Final decomposition
@@ -301,7 +302,7 @@ AICc(arima(housing_ts, order = c(1,1,2)))
 c(  # q = 3
 AICc(arima(housing_ts, order = c(1,1,3)))
 ,AICc(arima(housing_ts, order = c(2,1,3)))
-,AICc(arima(housing_ts, order = c(3,1,3)))
+,AICc(arima(housing_ts, order = c(3,1,3))) #
 ,AICc(arima(housing_ts, order = c(4,1,3))))
 ,
 c(  # q = 4
@@ -313,14 +314,16 @@ AICc(arima(housing_ts, order = c(1,1,4)))
 
 models
 
-# #Lowest value appears to be p=3 d=0 q=3 with a value of: (373.2994)
+# #Lowest value appears to be p=3 d=1 q=3 with a value of: (371.2502)
  min(models)
  
 ```
   
-However, because we know by observing the residuals that there is a spike in the 12th obvservation, we are also going to test using a p or q values equal to 12 to see if we get lower values than the 3 0 3 model.
+However, because we know by observing the residuals that there is a spike in the 12th obvservation, we are also going to test using a p or q values equal to 12 to see if we get lower values than the 3 1 3 model.
 
-```{r}
+(Nacho: Why are we using current_ts?)
+
+```{r} 
 #We visualize the spike in the residuals
 tsdisplay(residuals(arima(current_ts, order = c(3,0,3))), lag.max=15, main='Model Reiduals')
 
@@ -341,29 +344,118 @@ curr_test4 <- arima(housing_ts, order = c(12,1,12))
 AICc(curr_test4)  #We get a lower value
 tsdisplay(residuals(curr_test4), lag.max=15, main='12 1 12 Model Reiduals')
 ```
+Let's go nuts and try all models!
+```{r}
+#Final decomposition
+stl.housing <- stl(housing_ts, t.window=5, s.window="periodic", robust=TRUE)
 
+models.1 = c(#d and D
+           AICc(Arima(housing_ts,order=c(0,0,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,0),seasonal=list(order=c(0,0,0), period=12))), #Best: d=1, D=0
+           AICc(Arima(housing_ts,order=c(0,0,0),seasonal=list(order=c(0,1,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,0),seasonal=list(order=c(0,1,0), period=12)))
+           )
+models.1
+min(models.1)
+
+models.2 = c(#p and q
+           AICc(Arima(housing_ts,order=c(0,1,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,1),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,2),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,3),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(0,1,4),seasonal=list(order=c(0,0,0), period=12))),
+           
+           AICc(Arima(housing_ts,order=c(1,1,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(1,1,1),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(1,1,2),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(1,1,3),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(1,1,4),seasonal=list(order=c(0,0,0), period=12))),
+           
+           AICc(Arima(housing_ts,order=c(2,1,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(2,1,1),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(2,1,2),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(2,1,3),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(2,1,4),seasonal=list(order=c(0,0,0), period=12))),
+           
+           AICc(Arima(housing_ts,order=c(3,1,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(3,1,1),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(3,1,2),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,0), period=12))), #Best: p=q=3
+           AICc(Arima(housing_ts,order=c(3,1,4),seasonal=list(order=c(0,0,0), period=12))),
+           
+           AICc(Arima(housing_ts,order=c(4,1,0),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(4,1,1),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(4,1,2),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(4,1,3),seasonal=list(order=c(0,0,0), period=12))),
+           AICc(Arima(housing_ts,order=c(4,1,4),seasonal=list(order=c(0,0,0), period=12)))
+)
+models.2
+min(models.2)
+
+models.3 = c(#P and Q
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,0), period=12))),
+          #AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,1), period=12))),
+          #AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,2), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,3), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,4), period=12))), #Best: P=0, Q=4 
+          
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(1,0,0), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(1,0,1), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(1,0,2), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(1,0,3), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(1,0,4), period=12))),
+          
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(2,0,0), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(2,0,1), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(2,0,2), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(2,0,3), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(2,0,4), period=12))),
+          
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(3,0,0), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(3,0,1), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(3,0,2), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(3,0,3), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(3,0,4), period=12))),
+          
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(4,0,0), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(4,0,1), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(4,0,2), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(4,0,3), period=12))),
+          AICc(Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(4,0,4), period=12)))
+)
+models.3
+min(models.3) #lower AICC obtained
+```
 
   e) *Make diagnostic of the residuals for the final model chosen (autocorrelations, zero mean, normality). Use plots and tests.*
   
 ```{r}
+#Final model 1
 #To make diagnostics, we should analyse the ACF and PACF values
 final.model = arima(current_ts, order = c(0,0,12))
-# summary(final.model)
-# 
+summary(final.model)
+plot(final.model$residuals)
+tsdiag(final.model)
+jarque.bera.test(final.model$residuals) #Not a great result
+
 # acf(current_ts)
 # pacf(current_ts)
 # 
 
+#Final model 2
 #To make diagnostics, we should analyse the ACF and PACF values
-final.model2 = Arima(housing_ts, order = c(0,1,12))
+final.model2 = Arima(housing_ts, order = c(12,1,12))
 summary(final.model2)
-
 plot(final.model2$residuals)
-
 tsdiag(final.model2)
+jarque.bera.test(final.model2$residuals) #Not a great result
 
-#Not a greate result
-jarque.bera.test(final.model2$residuals)
+#Final model 3
+final.model3<- Arima(housing_ts,order=c(3,1,3),seasonal=list(order=c(0,0,4), period=12))
+summary(final.model3)
+plot(final.model3$residuals)
+tsdiag(final.model3)
+jarque.bera.test(final.model3$residuals) #Not a great result
 
 ```
   
@@ -374,33 +466,63 @@ jarque.bera.test(final.model2$residuals)
 #arima
 
 fcst.fm=forecast(final.model, h=24)
-plot(fcst.fm)
+plot(fcst.fm) #There is a problem with the data shape: it looks like residuals!
 
 fcst.fm2=forecast(final.model2, h=24)
 plot(fcst.fm2)
+
+fcst.fm3=forecast(final.model3, h=24)
+plot(fcst.fm3)
 ```
   
 
-  g) *Use the function getrmse to compute the test set RMSE of some of the models you have already fiited. Which is the one minimizing it? Use the last year of observations (12 observations for monthly data, 4 observations for quarterly data) as the test set.*
+  g) *Use the function getrmse to compute the test set RMSE of some of the models you have already fitted. Which is the one minimizing it? Use the last year of observations (12 observations for monthly data, 4 observations for quarterly data) as the test set.*
   
 ```{r}
-#To be honest i cant find that function. We may have to load it.
+#Guillermo's method
 
 #Training and testing data split
 arima.train=window(housing_ts, end=2007-0.001)
 arima.test=window(housing_ts,start=2007) 
 
+#Final model 1
+final.model.predict = arima(arima.train, order = c(0,0,12))
+arima.predict = predict(final.model.predict, 12)
+sqrt(mean((arima.predict$pred - arima.test)^2, na.rm=TRUE)) # Validation: test error  RMSE
+
+#Final model 2
 final.model2.predict = arima(arima.train, order = c(12,1,12))
-
 arima.predict = predict(final.model2.predict, 12)
+sqrt(mean((arima.predict$pred - arima.test)^2, na.rm=TRUE)) # Validation: test error  RMSE
 
-arima.predict
-
-arima.test
-
-# # Validation: test error  RMSE
-sqrt(mean((arima.predict$pred - arima.test)^2, na.rm=TRUE))
+#Final model 3 (lower RMSE)
+final.model3.predict = arima(arima.train, order=c(3,1,3),seasonal=list(order=c(0,0,4), period=12))
+arima.predict = predict(final.model3.predict, 12)
+sqrt(mean((arima.predict$pred - arima.test)^2, na.rm=TRUE)) # Validation: test error  RMSE
 ```
+
+
+```{r}
+#Arminda's method
+getrmse <- function(x,h,...)
+{
+  train.end <- time(x)[length(x)-h]   #train data end
+  test.start <- time(x)[length(x)-h+1]  #test data start
+  train <- window(x,end=train.end) #extract train data
+  test <- window(x,start=test.start)  #extract test data
+  fit <- Arima(train,...) # fit model with train data
+  fc <- forecast(fit,h=h) # forecast with model
+  return(accuracy(fc,test)[2,"RMSE"]) #compare forecast with test data, extract the rmse
+}
+
+#Final model 1 (best results but it is using different data!)
+getrmse(current_ts,h=12,order=c(0,0,12))
+#Final model 2
+getrmse(housing_ts,h=12,order=c(12,1,12))
+#Final model 3
+getrmse(housing_ts,h=12,order=c(3,1,3),seasonal=list(order=c(0,1,4), period=12))
+```
+
   
 
   h) *You can also use the auto.arima() function with some of its parameters fixed, to see if it suggests a better model that the one you have found. Don’t trust blindly its output. Automatic found models aren’t based on an analysis of residuals but in comparing some other measures like AIC. Depending on how complex the data set is, they may find models with high values for p, q, P or Q (greater than 2).*
@@ -410,18 +532,19 @@ auto.model <- auto.arima(d.ts,
                          seasonal= TRUE,
                          max.order = 24,
                          max.p = 14,
-                         max.q = 14)
-
+                         max.q = 14
+                         )
 
 summary(auto.model)
-tsdisplay(residuals(auto.model), lag.max=15, main='Automatic Model Reiduals')
+AICc(auto.model) #Worst AICC than our models
 
-tsdisplay(residuals(final.model), lag.max=15, main='Final Model Reiduals')
-
-tsdisplay(residuals(final.model2), lag.max=15, main='Final Model 2 Reiduals')
-
-jarque.bera.test(final.model2$residuals)
-
+tsdisplay(residuals(auto.model), lag.max=15, main='Automatic Model Residuals')
+tsdisplay(residuals(final.model), lag.max=15, main='Final Model 1 Residuals')
+tsdisplay(residuals(final.model2), lag.max=15, main='Final Model 2 Residuals')
+tsdisplay(residuals(final.model3), lag.max=15, main='Final Model 3 Residuals')
 ```
+
+
+
   
   
