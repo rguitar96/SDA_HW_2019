@@ -38,7 +38,7 @@ housing_ts <- ts(housing[,2], frequency=12, start=c(1990,1))
 autoplot(housing_ts)
 #Seasonality in depth
 ggmonthplot(housing_ts) #Monthly
-ggseasonplot(housing_ts) #Yearly
+ggseasonplot(housing_ts, continuous=TRUE) #Yearly
 ```
 
 * Trend: There is a trend over time and we can see different patterns. There is a changing trend that has a positive slope between 1991 and 1993, a negative slope between 1993 and 2003, and a positive slope from 2003 and onwards. 
