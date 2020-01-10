@@ -474,17 +474,22 @@ print(paste0("Residual Mean: ", final.model.mean))
 print("")
 print("")
 
-cov2cor(final.model$var.coef)
+covFM = cov2cor(final.model$var.coef)
+maxCovFM = max(covFM[covFM < 1])
+print(paste0("Largest  correlation: ", maxCovFM))
+
 
 print("")
 print("")
 
 jarque.bera.test(final.model$residuals) 
 
-
 plot(final.model$residuals)
 
+ggAcf(final.model$residuals)
+
 tsdiag(final.model)
+
 
 ```
 
@@ -503,7 +508,9 @@ print(paste0("Residual Mean: ", final.model2.mean))
 print("")
 print("")
 
-cov2cor(final.model2$var.coef)
+covFM2 = cov2cor(final.model2$var.coef)
+maxCovFM2 = max(covFM2[covFM2 < 1])
+print(paste0("Largest  correlation: ", maxCovFM2))
 
 print("")
 print("")
@@ -531,7 +538,9 @@ print(paste0("Residual Mean: ", final.model3.mean))
 print("")
 print("")
 
-cov2cor(final.model3$var.coef)
+covFM3 = cov2cor(final.model3$var.coef)
+maxCovFM3 = max(covFM3[covFM3 < 1])
+print(paste0("Largest  correlation: ", maxCovFM3))
 
 print("")
 print("")
@@ -561,7 +570,12 @@ print(paste0("Residual Mean: ", final.model4.mean))
 print("")
 print("")
 
-cov2cor(final.model4$var.coef)
+print("")
+print("")
+
+covFM4 = cov2cor(final.model4$var.coef)
+maxCovFM4 = max(covFM4[covFM4 < 1])
+print(paste0("Largest  correlation: ", maxCovFM4))
 
 print("")
 print("")
